@@ -130,8 +130,16 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 	if ( is_wp_error( $media ) )
 		wp_send_json_error( [ 'message' => '画像アップロードエラー: ' . $media->get_error_message() ] );
 
-	// ⑥ 記事（下書き）を作成
-	$content = ototoscreen_build_content( $movie, $description, $media['url'] );
+	// ⑥ Claude: GIM視点の解説を生成
+	$gim_commentary = '';
+	$gim_result = ototoscreen_generate_gim_commentary( $title, $description );
+	if ( ! is_wp_error( $gim_result ) ) $gim_commentary = $gim_result;
+
+	// ⑦ TMDb: YouTube予告編を取得
+	$trailer_embed = ototoscreen_get_youtube_trailer( $movie_id );
+
+	// ⑧ 記事（下書き）を作成
+	$content = ototoscreen_build_content( $movie, $description, $media['url'], $gim_commentary, $trailer_embed );
 	$post_id = ototoscreen_create_draft( $title, $content, $media['id'] );
 	if ( is_wp_error( $post_id ) )
 		wp_send_json_error( [ 'message' => '記事作成エラー: ' . $post_id->get_error_message() ] );

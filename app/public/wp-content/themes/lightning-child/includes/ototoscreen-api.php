@@ -143,6 +143,46 @@ Description: {$description}";
 	return ototoscreen_claude_request( $prompt, 200 );
 }
 
+function ototoscreen_generate_gim_commentary( $title, $description ) {
+	$prompt = "あなたはGIM（Guided Imagery and Music：音楽誘導イメージ療法）の実践者です。
+以下の映画における音楽の使われ方について、GIMの視点から150〜200文字程度で解説してください。
+
+【映画タイトル】{$title}
+【映画の紹介】{$description}
+
+条件：
+- 音楽が感情・記憶・想像力・癒しにどう作用しているかに注目する
+- GIM実践者ならではの視点を入れる
+- 一般の映画ファンにも分かりやすい言葉で書く
+- 解説文のみを出力する（見出し不要）";
+
+	return ototoscreen_claude_request( $prompt, 600 );
+}
+
+// =============================================
+// TMDb — YouTube 予告編を取得する
+// =============================================
+
+function ototoscreen_get_youtube_trailer( $movie_id ) {
+	// 日本語 → 英語の順で探す
+	foreach ( [ 'ja-JP', 'en-US' ] as $lang ) {
+		$response = wp_remote_get(
+			"https://api.themoviedb.org/3/movie/{$movie_id}/videos",
+			[ 'timeout' => 10, 'body' => [ 'api_key' => OTOTOSCREEN_TMDB_API_KEY, 'language' => $lang ] ]
+		);
+		if ( is_wp_error( $response ) ) continue;
+
+		$videos = json_decode( wp_remote_retrieve_body( $response ), true )['results'] ?? [];
+		foreach ( $videos as $v ) {
+			if ( ( $v['site'] ?? '' ) === 'YouTube' && ( $v['type'] ?? '' ) === 'Trailer' ) {
+				$key = esc_attr( $v['key'] );
+				return '<iframe width="100%" height="400" src="https://www.youtube.com/embed/' . $key . '" frameborder="0" allowfullscreen></iframe>';
+			}
+		}
+	}
+	return ''; // 予告編が見つからない場合
+}
+
 // =============================================
 // OpenAI API — gpt-image-1 でイラスト生成
 // =============================================
@@ -211,7 +251,7 @@ function ototoscreen_upload_illustration( $image_bytes, $movie_id ) {
 	];
 }
 
-function ototoscreen_build_content( $movie, $description, $illustration_url ) {
+function ototoscreen_build_content( $movie, $description, $illustration_url, $gim_commentary = '', $trailer_embed = '' ) {
 	$title      = esc_html( $movie['title'] ?? 'タイトルなし' );
 	$release    = esc_html( $movie['release_date'] ?? '不明' );
 	$score      = esc_html( $movie['vote_average'] ?? '' );
@@ -219,7 +259,7 @@ function ototoscreen_build_content( $movie, $description, $illustration_url ) {
 		? esc_url( 'https://image.tmdb.org/t/p/w500' . $movie['poster_path'] )
 		: '';
 
-	return "
+	$content = "
 <div style=\"display:flex; gap:24px; align-items:flex-start;\">
   <figure style=\"flex:1;\">
     <img src=\"{$poster_url}\" alt=\"{$title} ポスター\" style=\"width:100%;\">
@@ -239,9 +279,27 @@ function ototoscreen_build_content( $movie, $description, $illustration_url ) {
 
 <h2>紹介</h2>
 <p>" . esc_html( $description ) . "</p>
+";
 
+	if ( $gim_commentary ) {
+		$content .= "
+<h2>音楽の使われ方（GIM視点の解説）</h2>
+<p>" . esc_html( $gim_commentary ) . "</p>
+";
+	}
+
+	if ( $trailer_embed ) {
+		$content .= "
+<h2>予告編</h2>
+" . $trailer_embed . "
+";
+	}
+
+	$content .= "
 <p><small>※ 映画情報は <a href=\"https://www.themoviedb.org/\">TMDb</a> より取得しています。</small></p>
 ";
+
+	return $content;
 }
 
 function ototoscreen_create_draft( $title, $content, $media_id = null ) {
