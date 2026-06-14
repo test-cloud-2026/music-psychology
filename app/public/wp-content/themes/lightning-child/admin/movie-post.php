@@ -62,8 +62,9 @@ if ( ! defined( 'ABSPATH' ) || ! current_user_can( 'manage_options' ) ) exit;
 </style>
 
 <script>
-var osMovie = null;
-var osNonce = '<?php echo esc_js( wp_create_nonce( 'ototoscreen_nonce' ) ); ?>';
+var osMovie     = null;
+var osMovieList = []; // 検索結果をここに保持（クリック時はインデックスで参照）
+var osNonce     = '<?php echo esc_js( wp_create_nonce( 'ototoscreen_nonce' ) ); ?>';
 
 function osSearch() {
 	var q = document.getElementById('os-search-input').value.trim();
@@ -75,7 +76,8 @@ function osSearch() {
 	document.getElementById('os-results').innerHTML = '';
 	document.getElementById('os-generate-area').style.display = 'none';
 	document.getElementById('os-status').style.display = 'none';
-	osMovie = null;
+	osMovie     = null;
+	osMovieList = [];
 
 	jQuery.post( ajaxurl, { action: 'ototoscreen_search', query: q, nonce: osNonce },
 		function( res ) {
@@ -96,16 +98,17 @@ function osSearch() {
 }
 
 function osRender( movies ) {
+	osMovieList = movies; // 検索結果を保持
 	if ( ! movies.length ) {
 		document.getElementById('os-results').innerHTML = '<p>映画が見つかりませんでした。別のキーワードで試してください。</p>';
 		return;
 	}
 	var html = '<p style="color:#555; font-size:13px; margin-bottom:10px;">クリックして映画を選択してください</p>';
-	movies.forEach( function( m ) {
+	movies.forEach( function( m, i ) {
 		var poster = m.poster_path ? 'https://image.tmdb.org/t/p/w92' + m.poster_path : '';
 		var year   = m.release_date ? m.release_date.slice( 0, 4 ) : '年不明';
-		var data   = JSON.stringify( m ).replace( /</g, '\\u003c' );
-		html += '<div class="os-card" onclick="osSelect(this,' + data + ')">' +
+		// onclick にはインデックス番号だけ渡す（JSON文字列のクォート問題を回避）
+		html += '<div class="os-card" onclick="osSelect(this,' + i + ')">' +
 			( poster ? '<img src="' + poster + '" alt="">' : '<img src="" style="visibility:hidden">' ) +
 			'<div>' +
 			'<p class="os-title">' + m.title + '</p>' +
@@ -116,12 +119,12 @@ function osRender( movies ) {
 	document.getElementById('os-results').innerHTML = html;
 }
 
-function osSelect( el, movie ) {
+function osSelect( el, index ) {
 	document.querySelectorAll('.os-card').forEach( function(c) { c.classList.remove('os-active'); } );
 	el.classList.add('os-active');
-	osMovie = movie;
-	var year = movie.release_date ? '（' + movie.release_date.slice(0,4) + '）' : '';
-	document.getElementById('os-selected-title').textContent = movie.title + year;
+	osMovie = osMovieList[ index ]; // インデックスから映画データを取得
+	var year = osMovie.release_date ? '（' + osMovie.release_date.slice(0,4) + '）' : '';
+	document.getElementById('os-selected-title').textContent = osMovie.title + year;
 	document.getElementById('os-generate-area').style.display = 'block';
 	document.getElementById('os-status').style.display = 'none';
 }
