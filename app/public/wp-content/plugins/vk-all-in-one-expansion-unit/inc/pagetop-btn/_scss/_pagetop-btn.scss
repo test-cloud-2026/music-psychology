@@ -1,0 +1,74 @@
+// page top btn
+.page_top_btn {
+	position: fixed;
+	right: 2%;
+	bottom: 3%;
+	z-index: 99999;
+	width: 40px;
+	height: 38px;
+	color: transparent; //PAGE TOPの文字を消すために追加 （overflow:hiddenで消すとカスタマイズショートカットアコンが消えるため）
+	border: none;
+	background: rgba(0,0,0,0.8);
+	box-shadow: 0 0 0 1px rgba(255,255,255,0.8), 0 0 0 2px rgba(0, 0, 0, 0.8);
+
+	// Keep the legacy `--ver_` custom property as the primary value so that
+	// users who already override it from their theme / custom CSS continue
+	// to work, and fall back to the corrected `--veu_` name (vk Ex Unit).
+	// 既存ユーザーがテーマ／カスタム CSS で `--ver_` を上書きしている可能性があるため、
+	// `--ver_` を優先しつつ、未指定時には正しい命名の `--veu_` にフォールバックする。
+	background-image: var( --ver_page_top_button_url, var( --veu_page_top_button_url ) );
+	background-size: 50%;
+	background-repeat: no-repeat;
+	background-position: center;
+	opacity: 0;
+	transition: opacity 0.3s;
+	text-decoration: none;
+
+	// When a user-uploaded image is applied via the inline `--veu_` override,
+	// use `contain` so that the entire image fits the button without being
+	// cropped. The default icon keeps the 50% size for visual balance.
+	// Also, the user image is shown directly; remove default icon-style
+	// decorations (dark background fill and white/black outline shadow) so
+	// the image itself is not visually enclosed by a black frame.
+	// ユーザーがアップロードした画像が style 属性で適用された場合、
+	// `contain` で全体が収まるようにする。デフォルトアイコンは見た目の
+	// 都合で 50% のままにしておく。
+	// さらに、ユーザー画像をそのまま表示するため、デフォルトアイコン用の
+	// 装飾（暗い背景塗りと白＋黒のシャドウ枠）を打ち消す。画像の周囲に
+	// 黒い枠が出ないようにする。
+	&.has-image {
+		background-size: contain;
+		background-color: transparent;
+		box-shadow: none;
+
+		// When the user provides explicit width/height via the option,
+		// the inline `style` attribute writes `--veu_page_top_button_width`
+		// and `--veu_page_top_button_height`. Fallback values match the
+		// base `.page_top_btn` size (40 / 38 px) so that unspecified
+		// dimensions stay at the default.
+		// ユーザーが画像サイズを指定した場合は inline style 経由で
+		// CSS カスタムプロパティが付与される。未指定時は fallback として
+		// 既定サイズ (40 / 38 px) が効く。
+		width: var(--veu_page_top_button_width, 40px);
+		height: var(--veu_page_top_button_height, 38px);
+	}
+
+	// テーマや他の CSS で `a:hover { text-decoration: underline; color: ...; }` のように
+	// リンクのデフォルトホバースタイルが上書きされている場合、親 `.page_top_btn` の
+	// 指定だけでは `:hover` 状態でテーマ側のスタイルを打ち消すことができない。
+	// 親と同値だが、テーマ側の `a:hover` 上書きを確実に打ち消すために `:hover` で
+	// 明示的に再宣言している（defensive declaration）。一見冗長に見えるが削除不可。
+	&:hover {
+		transition: opacity 0.3s;
+		color: transparent;
+		text-decoration: none;
+	}
+	.customize-partial-edit-shortcut-button {
+		left: -40px;
+	}
+}
+.scrolled .page_top_btn{
+	display: block;
+	opacity: 1;
+	color: transparent;
+}

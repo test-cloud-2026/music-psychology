@@ -1,0 +1,65 @@
+{
+  "apiVersion": 3,
+  "name": "vk-blocks/ancestor-page-list",
+  "category": "vk-blocks-cat",
+  "title": "Page list from ancestor",
+  "attributes": {
+    "ancestorTitleDisplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "ancestorTitleTagName": {
+      "type": "string",
+      "default": "h4"
+    },
+    "ancestorTitleClassName": {
+      "type": "string",
+      "default": null
+    },
+    "ancestorTitleLink": {
+      "type": "boolean",
+      "default": false
+    },
+    "displayHasChildOnly": {
+      "type": "boolean",
+      "default": false
+    },
+    "hiddenGrandChild": {
+      "type": "boolean",
+      "default": false
+    },
+    "backgroundColor": {
+      "type": "string"
+    },
+    "textColor": {
+      "type": "string"
+    },
+    "style": {
+      "type": "object"
+    },
+    "borderColor": {
+      "type": "string"
+    }
+  },
+  "description": "Display Page list from ancestor page",
+  "textdomain": "vk-blocks",
+  "supports": {
+    "className": true,
+    "color": {
+      "gradients": true,
+      "link": true,
+      "background": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "__experimentalBorder": {
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true
+    }
+  }
+}

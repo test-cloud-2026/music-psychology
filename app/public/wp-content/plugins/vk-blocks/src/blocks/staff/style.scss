@@ -1,0 +1,209 @@
+/*-------------------------------------------*/
+/* CSS
+/*-------------------------------------------*/
+$font_serif: "ＭＳ Ｐ明朝", "MS PMincho", "ヒラギノ明朝 Pro W3",
+	"Hiragino Mincho Pro", "serif";
+
+// Layout
+.vk_staff {
+	&_text {
+		float: left;
+		width: 61.6%;
+	}
+	&_photo {
+		float: right;
+		width: 32%;
+	}
+	&-layout-imageLeft {
+		.vk_staff_text {
+			float: right;
+		}
+		.vk_staff_photo {
+			float: left;
+		}
+	}
+}
+
+// 編集画面でcssの指定が軽くて負けるので.vk_staff .vk_staff_text を先に記述
+.vk_staff{
+	display: block;
+	overflow: hidden;
+	.vk_staff_text {
+		.vk_staff_text{
+			&_name {
+				&:not(.has-text-color) {
+					color: inherit;
+				}
+				text-align: left;
+				box-shadow: none;
+				font-size: calc( 1rem * 2.5 );
+				font-family: $font_serif;
+				line-height: 1;
+				margin-bottom: 0.5rem;
+				border: none;
+				padding: 0;
+				background-color: transparent;
+				display: inline; // これがないと見出しデザインで左右線みたいにflax指定されたときにセンター揃えになってしまう
+				&:before,
+				&:after {
+					display: none;
+				}
+			}
+
+			&_caption {
+				&:not(.has-text-color) {
+					color: inherit;
+				}
+				font-size: 14px;
+				display: block;
+				margin: 0 0 0.5rem 4px;
+				letter-spacing: 5px;
+			}
+			&_role {
+				&:not(.has-text-color) {
+					color: inherit;
+				}
+				font-size: 14px;
+				line-height: 1.6em;
+			}
+			&_profileTitle {
+				&:not(.has-text-color) {
+					color: inherit;
+				}
+				font-size: 18px;
+				padding-top: 0;
+				padding-left: 0;
+				padding-bottom: 2px;
+				margin-top:calc( 1rem * 1.5);
+				margin-bottom: calc( 1rem * 1.2 );
+				border-top: none;
+				border-left: none;
+				border-bottom: 1px solid #ccc;
+				background: none;
+				&:before,
+				&:after {
+					border: none;
+				}
+			}
+			&_profileText {
+				&:not(.has-text-color) {
+					color: inherit;
+				}
+				font-size: 14px;
+			}
+		}
+	} //.vk_staff_text
+
+	.vk_staff-headingFont-serif {
+		.vk_staff_text{
+			&_name {
+				font-family: $font_serif;
+			}
+			&_caption {
+				font-family: $font_serif;
+			}
+			&_role {
+				font-family: $font_serif;
+			}
+			&_profileTitle {
+				font-family: $font_serif;
+			}
+		}
+	}
+
+		.vk_staff_photo {
+			display: block;
+			vertical-align: top;
+			text-align: center;
+			button {
+				width: 100%;
+			}
+			.image-button {
+				padding: 0;
+				margin: 0;
+				display: block;
+				height: 100%; // これがないと画像の枠が潰れる
+			}
+			&-border-default {
+				border: 4px solid #efefef;
+				padding: 1px;
+			}
+			&-border-none {
+				border: none;
+			}
+			&_image {
+				width: 100%;
+				margin: 0;
+				display: block;
+			}
+		}
+
+}
+
+// Lightning で幅広の１カラムテンプレート時補正
+.page-template-page-onecolumn,
+.page-template-page-lp,
+.page-template-page-lp-builder {
+	.vk_staff {
+		@media (min-width: 992px) {
+			&_text {
+				width: 74%;
+				&_caption {
+					font-size: 1rem;
+					letter-spacing: 0.5rem;
+				}
+				&_role {
+					letter-spacing: 0.5rem;
+				}
+			}
+			&_photo {
+				width: 22%;
+			}
+		}
+		@media (min-width: 1200px) {
+			&_text {
+				width: 75%;
+			}
+			&_photo {
+				width: 20%;
+			}
+		}
+	}
+}
+
+// .staff-profile-table {
+// 	margin-top: 2em;
+// 	margin-bottom: 80px;
+// 	border: none;
+// }
+//
+// .staff-profile-table dl {
+// 	display: table;
+// 	width: 100%;
+// }
+//
+// .staff-profile-table dt,
+// .staff-profile-table dd {
+// 	display: table-cell;
+// 	border-bottom: 1px solid #ccc;
+// 	padding-left: 10px;
+// 	font-size: 14px;
+// 	padding-bottom: 4px;
+// }
+//
+// .staff-profile-table dl {
+// 	margin: 0 0 1rem;
+// }
+//
+// .staff-profile-table dt {
+// 	background: none;
+// 	font-weight: lighter;
+// 	border-left-width: 2px;
+// 	border-left-style: solid;
+// 	width: 30%;
+// }
+//
+// .staff-profile-table dd {
+// 	border-left: none;
+// 	width: 70%;
+// }

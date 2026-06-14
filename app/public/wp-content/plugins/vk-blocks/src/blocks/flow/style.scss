@@ -1,0 +1,107 @@
+//*      .flowBox
+/*-------------------------------------------*/
+$xs-max: 575.98px;
+$sm-max: 767.98px;
+$md-max: 991.98px;
+$lg-max: 1199.98px;
+$xl-max: 1399.98px;
+
+$sm-min: 576px;
+$md-min: 768px;
+$lg-min: 992px;
+$xl-min: 1200px;
+$xxl-min: 1200px;
+
+.vk_flow{ // 編集画面でcssの指定が軽くて負けるので、優先させるため記述
+	margin-block-start:0; //global-styles-inline-cssのmargin-block-startがつくので打ち消し
+	margin-bottom: 0;
+	.vk_flow_frame {
+		display: flex;
+		padding: 20px 25px;
+		border: 3px solid #e5e5e5;
+		margin: 0;
+		justify-content: space-between;
+		@media (max-width: $xs-max) {
+			flex-wrap: wrap;
+		}
+	}
+
+	.vk_flow_frame_text {
+		display: block;
+		overflow: hidden;
+		margin: 0;
+		box-sizing: border-box;
+		width: 100%;
+		@media (max-width: $xs-max) {
+			margin-bottom: 1em;
+		}
+		@media (min-width: $sm-min) {
+			margin-right: 15px;
+		}
+	}
+
+	.vk_flow_frame_text_title,
+	.vk_flow_frame_text_content {
+		padding-left: 0;
+		border: none;
+	}
+
+	.vk_flow_frame_text_title {
+		border-bottom: 1px dotted #ccc;
+		margin: 0 0 10px;
+		padding: 0 0 5px;
+		font-size: 1.2em;
+	}
+
+	.vk_flow_frame_text_content {
+		margin-bottom: 0;
+		margin-inline-start: 0;
+		margin-left:0;
+	}
+
+	.vk_flow_frame_image {
+		max-width: 150px;
+		box-sizing: border-box;
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+	}
+
+	&.vk_flow-arrow-on::after,
+	> .vk_flow_frame_arrow {
+		position: relative;
+		content: "";
+		background: var(--vk_flow-arrow) center 50% no-repeat;
+		background-size: 50px 50px;
+		display: block;
+		overflow: hidden;
+		height: 50px;
+		width: 50px;
+		margin: 0 auto;
+	}
+
+	&.vk_flow-arrow-off {
+		padding-bottom: 0;
+		margin-bottom: 30px;
+	}
+
+	&.vk_flow-arrow-off::after {
+		content: "";
+		font-size: 0;
+		background-image: none;
+	}
+}
+
+// 編集画面
+// コア側のcssで矢印(after要素)の位置がおかしくなるので上書き
+.editor-styles-wrapper {
+	.vk_flow-arrow-on::after {
+		background: none;
+		display: unset;
+		height: unset;
+		width: unset;
+		margin: unset;
+		overflow: unset;
+	}
+}

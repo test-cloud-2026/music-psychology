@@ -1,0 +1,97 @@
+@use 'components/scroll-hint/styles/base' as *;
+@use 'components/scrollbar-styles/scrollbar' as *;
+
+/*-------------------------------------------*/
+/* スクロールヒント - テーブルブロック用
+/*-------------------------------------------*/
+// 横スクロール
+@mixin scrollable-table {
+	display: block;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+
+	table {
+		table-layout: auto;
+
+		th, td {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+}
+
+@mixin scrollable-table-editor {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+
+	table {
+		table-layout: auto;
+
+		th, td {
+			> div[role="textbox"] {
+				white-space: nowrap !important;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+	}
+}
+
+/*      フロントエンド
+/*-------------------------------------------*/
+.wp-block-table {
+	&.is-style-vk-table-scrollable {
+
+		&[data-scroll-breakpoint="table-scrollable-mobile"] {
+			@media (max-width: 575.98px) {
+				@include scrollable-table;
+				@include scrollbar-custom;
+			}
+		}
+
+		&[data-scroll-breakpoint="table-scrollable-tablet"] {
+			@media (max-width: 991.98px) {
+				@include scrollable-table;
+				@include scrollbar-custom;
+			}
+		}
+
+		&[data-scroll-breakpoint="table-scrollable-pc"] {
+			@include scrollable-table;
+			@include scrollbar-custom;
+		}
+	}
+}
+
+/*      編集画面
+/*-------------------------------------------*/
+.editor-styles-wrapper {
+	.wp-block-table {
+		&.is-style-vk-table-scrollable {
+
+			&[data-scroll-breakpoint="table-scrollable-mobile"] {
+				@media (max-width: 575.98px) {
+					@include scrollable-table-editor;
+					@include scrollbar-custom;
+					@include scrollbar-custom-editor-override;
+				}
+			}
+
+			&[data-scroll-breakpoint="table-scrollable-tablet"] {
+				@media (max-width: 991.98px) {
+					@include scrollable-table-editor;
+					@include scrollbar-custom;
+					@include scrollbar-custom-editor-override;
+				}
+			}
+
+			&[data-scroll-breakpoint="table-scrollable-pc"] {
+				@include scrollable-table-editor;
+				@include scrollbar-custom;
+				@include scrollbar-custom-editor-override;
+			}
+		}
+	}
+}
+

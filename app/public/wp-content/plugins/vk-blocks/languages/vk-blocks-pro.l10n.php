@@ -1,0 +1,2 @@
+<?php
+return ['domain'=>'vk-blocks-pro','plural-forms'=>'nplurals=2; plural=(n != 1);','language'=>'','project-id-version'=>'VK Blocks Pro 1.56.0.0','pot-creation-date'=>'2022-05-27T07:36:40+00:00','po-revision-date'=>'YEAR-MO-DA HO:MI+ZONE','x-generator'=>'Poedit 3.3.1','messages'=>[]];

@@ -1,0 +1,162 @@
+/*
+コア側のブロックcssを上書き用のファイルです
+--------------------------------------------*/
+.editor-styles-wrapper { //サイトエディター
+	//ソーシャルアイコン
+	.vk_card_item .block-editor-inner-blocks .block-editor-block-list__layout,//これがないとカード内のインナーブロックで効かない
+	.wp-block-social-links{
+		.wp-block.wp-social-link{
+			width: auto;
+			margin: 0 8px .8em 0;
+		}
+	}
+
+	//他テーマ（Twenty Twenty）上書き用
+		.wp-block-image figcaption{
+			display: block;
+		}
+		//他テーマ（Twenty Twenty）上書き用
+		ul li,
+		ol li{
+			margin:calc( 1rem * 0.8 ) 0;
+		}
+	
+	//グループブロック
+	.wp-block-group {
+		&.is-style-vk-group-stitch:before {
+			width: calc(100% - 1.25em);
+			height: calc(100% - 1.25em);
+		}
+	}
+}
+
+.vk-blocks-format-popover {
+	// WP5.9でPopoverコンポーネントにpaddingがなくなったため
+	.components-popover__content > div {
+			padding: 20px 18px;
+	}
+
+	// インライン文字サイズを再編集時に選択されたフォントサイズが黒バックの白抜きになるため
+	.components-toggle-group-control > div[data-active=true] {
+		background: rgb(30, 30, 30);
+		border-radius: 2px;
+	}
+}
+
+.vk-block-editor-url-input-wrapper {
+	display: flex;
+	margin-bottom: 8px;
+	gap: 4px;
+	// URLInput が flex で幅を正しく計算できるようにする（検索窓の表示崩れ防止）
+	> *:first-child {
+		flex: 1;
+		min-width: 0;
+	}
+}
+
+/*-------------------------------------------*/
+/* リンクツールバー（投稿へのリンク / URL指定）
+/*-------------------------------------------*/
+.vk-block-editor-link-toolbar-popover {
+	min-width: 280px;
+	padding: 4px 0;
+	// URLInput（.block-editor-url-input）が flex 内で幅を正しく取るように
+	.block-editor-url-input {
+		min-width: 0;
+		flex: 1;
+	}
+	// リンクプレビュー：コアの __preview 系クラス・構造に合わせているため、コアの block-editor-link-control__preview 用CSSが使われる
+	// 当コンポーネントは Flex を使わないため、レイアウト用の flex と見た目の微調整をここで指定
+	.block-editor-link-control__preview {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+		margin-bottom: 8px;
+		.block-editor-link-control__link-information {
+			display: flex;
+			justify-content: flex-start;
+			align-items: flex-start;
+			gap: 10px;
+			flex: 1;
+			min-width: 0;
+		}
+		.block-editor-link-control__preview-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			width: 32px;
+			height: 32px;
+			min-width: 32px;
+			svg {
+				width: 20px;
+				height: 20px;
+			}
+		}
+		.block-editor-link-control__preview-details {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-width: 0;
+			overflow: hidden;
+		}
+		.block-editor-link-control__preview-title,
+		.block-editor-link-control__preview-info {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}
+
+.vk-block-editor-link-destination-choice {
+	margin-bottom: 12px;
+}
+
+/* セクション余白 */
+.vk-block-editor-link-toolbar-popover {
+	.vk-block-editor-link-toolbar-form {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	.vk-block-editor-link-toolbar-section {
+		padding-top: 12px;
+		&:first-of-type {
+			padding-top: 0;
+		}
+	}
+	.vk-block-editor-link-toolbar-section-options {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+}
+
+/* URL指定時もツールバーアイコンを反転 */
+.vk-block-editor-link-toolbar-button.is-pressed {
+	background: var(--wp-admin-theme-color, #007cba);
+	color: #fff;
+}
+
+/*-------------------------------------------*/
+/* カラムの方向が逆のラベル
+/*-------------------------------------------*/
+.wp-block-columns {
+	&.is-vk-row-reverse {
+		border: 1px dashed #ccc !important;
+		left:0;
+		&:before {
+			position:absolute !important;
+			right:0;
+			top:0;
+			font-size:10px;
+			background: #eeeeee;
+			padding: .2em .6em;
+			z-index: 1000;
+			line-height: 1.2;
+			letter-spacing: 1px;
+			content: 'Reverse' !important;
+		}
+	}
+}

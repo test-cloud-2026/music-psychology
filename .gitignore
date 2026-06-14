@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# WordPress コアファイル（追跡不要）
+app/public/wp-admin/
+app/public/wp-includes/
+app/public/wp-*.php
+app/public/index.php
+app/public/xmlrpc.php
+app/public/readme.html
+app/public/license.txt
+app/public/local-xdebuginfo.php
+
+# 機密情報
+app/public/wp-config.php
+
+# アップロードファイル
+app/public/wp-content/uploads/
+
+# デフォルトテーマ（カスタマイズしない）
+app/public/wp-content/themes/twentytwentyfive/
+
+# キャッシュ・一時ファイル
+app/public/wp-content/cache/
+app/public/wp-content/upgrade/
+
+# ログ
+logs/
+
+# Node / Composer
+node_modules/
+vendor/

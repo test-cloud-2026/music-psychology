@@ -1,0 +1,34 @@
+/*-------------------------------------------*/
+/* CSS
+/*-------------------------------------------*/
+.vk_slider {
+	&_item {
+		height:auto; // これがないと高さが100%にならない
+		&.vk_valign-top {
+			align-items: flex-start;
+			justify-content: flex-start;
+		}
+		&.vk_valign-center {
+			align-items: center;
+			justify-content: center;
+		}
+		&.vk_valign-bottom {
+			align-items: flex-end;
+			justify-content: flex-end;
+		}
+		&_container {
+			// hidden を指定すると全幅などが切れるようになるので使用しない
+			// overflow: hidden;
+		}
+	}
+	.vk_slider_item-background-area{
+		max-width:100%;
+		margin-block-start: 0;
+	}
+	&.vk_slider--zoom {
+		.vk_slider_item {
+			position: relative;
+			overflow: hidden;
+		}
+	}
+}

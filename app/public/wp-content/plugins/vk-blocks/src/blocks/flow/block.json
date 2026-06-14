@@ -1,0 +1,39 @@
+{
+	"apiVersion": 3,
+	"name": "vk-blocks/flow",
+	"category": "vk-blocks-cat",
+	"title": "Flow",
+	"attributes": {
+		"heading": {
+			"type": "string",
+			"source": "html",
+			"selector": "dt",
+			"role": "content"
+		},
+		"content": {
+			"type": "string",
+			"source": "html",
+			"selector": "dd",
+			"role": "content"
+		},
+		"arrowFlag": {
+			"type": "string",
+			"default": "vk_flow-arrow-on"
+		},
+		"insertImage": {
+			"type": "string",
+			"default": null,
+			"role": "content"
+		},
+		"insertImageAlt": {
+			"type": "string",
+			"default": null,
+			"role": "content"
+		}
+	},
+	"description": "Displays a sequential description in time series.",
+	"textdomain": "vk-blocks",
+	"supports": {
+		"className": true
+	}
+}

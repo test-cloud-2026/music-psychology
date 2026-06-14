@@ -1,0 +1,118 @@
+{
+	"apiVersion": 3,
+	"name": "vk-blocks/button",
+	"title": "Button",
+	"category": "vk-blocks-cat",
+	"attributes": {
+		"content": {
+			"type": "string",
+			"source": "html",
+			"selector": "span",
+			"role": "content"
+		},
+		"subCaption": {
+			"type": "string"
+		},
+		"buttonUrl": {
+			"type": "string",
+			"role": "content"
+		},
+		"buttonTarget": {
+			"type": "boolean",
+			"default": false,
+			"role": "content"
+		},
+		"relAttribute": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"linkToPost": {
+			"type": "boolean",
+			"default": false
+		},
+		"buttonSize": {
+			"type": "string",
+			"default": "md"
+		},
+		"buttonType": {
+			"type": "string",
+			"default": "0"
+		},
+		"buttonEffect": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonColor": {
+			"type": "string",
+			"default": "primary"
+		},
+		"buttonTextColorCustom": {
+			"type": "string"
+		},
+		"buttonColorCustom": {
+			"type": "string"
+		},
+		"buttonAlign": {
+			"type": "string",
+			"default": "left"
+		},
+		"buttonWidthMobile": {
+			"type": "number",
+			"default": 0
+		},
+		"buttonWidthTablet": {
+			"type": "number",
+			"default": 0
+		},
+		"buttonWidth": {
+			"type": "number",
+			"default": 0
+		},
+		"outerGap": {
+			"type": "string",
+			"default": null
+		},
+		"fontAwesomeIconBefore": {
+			"type": "string"
+		},
+		"fontAwesomeIconAfter": {
+			"type": "string"
+		},
+		"iconSizeBefore": {
+			"type": "string",
+			"default": null
+		},
+		"iconSizeAfter": {
+			"type": "string",
+			"default": null
+		},
+		"borderRadius": {
+			"type": "string",
+			"default": null
+		},
+		"clientId": {
+			"type": "string"
+		},
+		"blockId": {
+			"type": "string"
+		},
+		"old_1_31_0": {
+			"type": "string",
+			"default": true
+		}
+	},
+	"description": "A button link that can display icons before and after.",
+	"textdomain": "vk-blocks",
+	"supports": {
+		"className": true,
+		"anchor": true,
+		"typography": {
+			"__experimentalFontFamily": true,
+			"__experimentalFontSize": true,
+			"__experimentalTextTransform": true,
+			"__experimentalLetterSpacing": true
+		}
+	},
+	"usesContext": ["queryId"]
+}

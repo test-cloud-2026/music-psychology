@@ -1,0 +1,199 @@
+<?php
+/**
+ * Plugin Name: VK Block Patterns
+ * Plugin URI: https://github.com/vektor-inc/vk-block-patterns
+ * Description: You can make and register your original custom block patterns.
+ * Version: 1.36.0
+ * Requires at least: 6.5
+ * Author:  Vektor,Inc.
+ * Author URI: https://vektor-inc.co.jp
+ * Text Domain: vk-block-patterns
+ * License: GPL 2.0 or Later
+ *
+ * @package VK Block Patterns
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+if ( ! function_exists( 'register_block_pattern' ) && ! wp_doing_ajax() ) {
+	return;
+}
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Define plugin version.
+$plugin_data = get_file_data( __FILE__, array( 'version' => 'Version' ) );
+define( 'VBP_VERSION', $plugin_data['version'] );
+
+// Define plugin path.
+define( 'VBP_PATH', plugin_dir_path( __FILE__ ) );
+
+// Define plugin url.
+define( 'VBP_URL', plugin_dir_url( __FILE__ ) );
+
+// define plugin prefix.
+global $vbp_prefix;
+$vbp_prefix = apply_filters( 'vbp_prefix', 'VK ' );
+
+/**
+ * オプション値を取得して返す
+ *
+ * @return $options オプション値の配列
+ */
+function vbp_get_options() {
+	// デフォルト値.
+	// この値を追加した場合は ./test/test-get-options.php のテストを追記する.
+	$default = array(
+		'role'                 => 'author',
+		'showPatternsLink'     => true,
+		'VWSMail'              => '',
+		'disableCorePattern'   => true,
+		'disablePluginPattern' => false,
+		'disableThemePattern'  => false,
+		'patternsPerPage'      => 20,
+		'account-check'        => array(
+			'date'                   => null,
+			'disable-empty-notice'   => false,
+			'disable-invalid-notice' => false,
+			'disable-free-notice'    => false,
+		),
+		'last-pattern-cached'  => null,
+		'savePluginData'       => false,
+	);
+	$options = get_option( 'vk_block_patterns_options' );
+	// 後から追加される項目もあるので、option値に保存されてない時にデフォルトとマージする
+	// ただし wp_parse_args は1階層目の内容しかきれいにマージしてくれないので注意.
+	$options = wp_parse_args( $options, $default );
+
+	// 後方互換: 旧キー disableXT9Pattern が保存されている場合は新キーに引き継ぐ.
+	if ( isset( $options['disableXT9Pattern'] ) ) {
+		$options['disableThemePattern'] = $options['disableXT9Pattern'];
+		unset( $options['disableXT9Pattern'] );
+	}
+
+	return $options;
+}
+
+
+/**
+ * Plugin Loaded
+ */
+function vbp_plugin_loaded() {
+
+	// Load Main File.
+	require_once VBP_PATH . 'inc/vk-block-patterns/vk-block-patterns-config.php';
+	// Load Edit Post Options.
+	require_once VBP_PATH . 'inc/edit-post/vk-edit-post-config.php';
+	// Load Admin Options.
+	require_once VBP_PATH . 'admin/admin.php';
+
+	require VBP_PATH . '/favorite-patterns/favorite-patterns.php';
+
+	// バージョンアップ時、またはキャッシュ形式変更時にパターンキャッシュを自動クリア.
+	// cache_version はキャッシュのデータ形式が変わった時にインクリメントする.
+	$cache_version       = 3; // v1: patterns/x-t9 → v2: favorite_patterns/theme_patterns → v3: categories に vk-pattern-themes を使用.
+	$saved_version       = get_option( 'vbp_version' );
+	$saved_cache_version = (int) get_option( 'vbp_cache_version', 0 );
+	if ( $saved_version !== VBP_VERSION || $saved_cache_version < $cache_version ) {
+		if ( function_exists( 'vbp_delete_patterns_cache_data' ) ) {
+			vbp_delete_patterns_cache_data();
+		}
+		update_option( 'vbp_version', VBP_VERSION );
+		update_option( 'vbp_cache_version', $cache_version );
+	}
+}
+add_action( 'plugins_loaded', 'vbp_plugin_loaded' );
+
+$options = vbp_get_options();
+if ( ! empty( $options['disableCorePattern'] ) ) {
+	remove_theme_support( 'core-block-patterns' );
+}
+
+require __DIR__ . '/patterns-data/class-register-patterns-from-json.php';
+if ( ! empty( $options['disablePluginPattern'] ) ) {
+	remove_action( 'init', array( 'wp_content\plugins\vk_block_patterns\patterns_data\Register_Patterns_From_Json', 'register_template' ) );
+}
+
+// Add a link to this plugin's settings page
+function vbp_set_plugin_meta( $links ) {
+	$settings_link = '<a href="options-general.php?page=vk_block_patterns_options">' . __( 'Setting', 'vk-block-patterns' ) . '</a>';
+	array_unshift( $links, $settings_link );
+	return $links;
+}
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'vbp_set_plugin_meta', 10, 1 );
+
+/**
+ * Add pattern library link
+ *
+ * @return void
+ */
+function vbp_add_pattern_link() {
+	$parent_slug = 'edit.php?post_type=vk-block-patterns';
+	$page_title  = 'パターンライブラリ';
+	$menu_title  = 'パターンライブラリ';
+	$capability  = 'edit_posts';
+	$menu_slug   = 'https://patterns.vektor-inc.co.jp/';
+	$function    = '';
+	if ( 'ja' === get_locale() ) {
+		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' );
+		add_action( 'admin_head', 'vbp_pattern_library_menu_behaviour' );
+	}
+}
+add_action( 'admin_menu', 'vbp_add_pattern_link' );
+
+/**
+ * パターンライブラリメニューを別ウィンドウで開く
+ *
+ * @return void
+ */
+function vbp_pattern_library_menu_behaviour() {
+	$target_url = 'https://patterns.vektor-inc.co.jp/';
+	?>
+	<script>
+	(function () {
+		var targetURL = <?php echo wp_json_encode( $target_url ); ?>;
+		if (typeof targetURL === 'string') {
+			targetURL = targetURL.replace(/\/$/, '');
+		}
+		window.addEventListener('load', function () {
+			var menuLinks = document.querySelectorAll('#menu-posts-vk-block-patterns .wp-submenu a');
+			if (!menuLinks.length) {
+				return;
+			}
+			for (var i = 0; i < menuLinks.length; i++) {
+				var menuLink = menuLinks[i];
+				var menuHref = (menuLink.href || '').replace(/\/$/, '');
+				if (!menuHref) {
+					continue;
+				}
+				if (menuHref === targetURL) {
+					menuLink.setAttribute('target', '_blank');
+					menuLink.setAttribute('rel', 'noopener');
+				}
+			}
+			});
+		})();
+	</script>
+	<?php
+}
+
+/**
+ * アンインストール処理
+ */
+function vbp_uninstall() {
+
+	$options = vbp_get_options();
+
+	// データを削除しないにチェックが入っていたら何もしない
+	if ( ! empty( $options['savePluginData'] ) ) {
+		return;
+	}
+
+	// オプションを削除
+	unregister_setting( 'vbp_setting', 'vk_block_patterns_options' );
+	delete_option( 'vk_block_patterns_options' );
+	delete_site_option( 'vk_block_patterns_options' );
+}
+register_uninstall_hook( __FILE__, 'vbp_uninstall' );

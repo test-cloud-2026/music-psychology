@@ -1,0 +1,213 @@
+/**
+ * columns-style block type
+ *
+ */
+import { __ } from '@wordpress/i18n';
+import { addFilter } from '@wordpress/hooks';
+import { PanelBody, ToggleControl, ToolbarGroup } from '@wordpress/components';
+import { createHigherOrderComponent } from '@wordpress/compose';
+import { InspectorControls, BlockControls } from '@wordpress/block-editor';
+import classnames from 'classnames';
+import LinkToolbar from '@vkblocks/components/link-toolbar';
+
+/**
+ * Internal dependencies
+ */
+import { VkPanelIcon } from '@vkblocks/components/vk-icon';
+
+const isColumnsBlock = (name) => name === 'core/columns';
+const isColumnBlock = (name) => name === 'core/column';
+
+export const enhanceColumnBlock = createHigherOrderComponent((BlockEdit) => {
+	return (props) => {
+		const { attributes, setAttributes } = props;
+		const {
+			reverse,
+			className,
+			linkUrl,
+			linkTarget,
+			relAttribute,
+			linkDescription,
+		} = attributes;
+
+		if (isColumnsBlock(props.name) && props.isSelected) {
+			// カラムの方向設定
+			return (
+				<>
+					<BlockEdit {...props} />
+					<InspectorControls>
+						<PanelBody
+							title={__('Column Direction', 'vk-blocks')}
+							icon={<VkPanelIcon isActive={reverse} />}
+							initialOpen={false}
+						>
+							<ToggleControl
+								label={__('Reverse', 'vk-blocks')}
+								checked={reverse}
+								onChange={(checked) => {
+									// 既存のクラス名
+									const existClass = className
+										? className.split(' ')
+										: [];
+									let newClassNameArray = [];
+									if (existClass) {
+										// いったん削除
+										newClassNameArray = existClass.filter(
+											(item) => {
+												return !item.match(
+													/is-vk-row-reverse/
+												);
+											}
+										);
+									}
+
+									// reverse クラスを付与
+									const rereverseClass = [
+										{
+											'is-vk-row-reverse': checked,
+										},
+									];
+									newClassNameArray = classnames(
+										newClassNameArray,
+										rereverseClass
+									);
+
+									setAttributes({
+										className: newClassNameArray,
+										reverse: checked,
+									});
+								}}
+							/>
+						</PanelBody>
+					</InspectorControls>
+				</>
+			);
+		}
+
+		if (isColumnBlock(props.name) && props.isSelected) {
+			// カラムのリンク設定（URL指定のみ。投稿へのリンクは非対応）
+			return (
+				<>
+					<BlockEdit {...props} />
+					<BlockControls>
+						<ToolbarGroup>
+							<LinkToolbar
+								linkUrl={linkUrl}
+								setLinkUrl={(url) =>
+									setAttributes({ linkUrl: url })
+								}
+								linkTarget={linkTarget}
+								setLinkTarget={(target) =>
+									setAttributes({ linkTarget: target })
+								}
+								relAttribute={relAttribute}
+								setRelAttribute={(rel) =>
+									setAttributes({ relAttribute: rel })
+								}
+								linkDescription={linkDescription}
+								setLinkDescription={(description) =>
+									setAttributes({
+										linkDescription: description,
+									})
+								}
+							/>
+						</ToolbarGroup>
+					</BlockControls>
+				</>
+			);
+		}
+
+		return <BlockEdit {...props} />;
+	};
+}, 'addMyCustomBlockControls');
+
+const extendColumnBlock = (settings, name) => {
+	if (!isColumnBlock(name) && !isColumnsBlock(name)) {
+		return settings;
+	}
+
+	if (isColumnsBlock(settings.name)) {
+		settings.attributes = {
+			...settings.attributes,
+			reverse: {
+				type: 'boolean',
+				default: false,
+			},
+		};
+	}
+
+	if (isColumnBlock(settings.name)) {
+		settings.attributes = {
+			...settings.attributes,
+			linkUrl: {
+				type: 'string',
+				default: '',
+			},
+			linkTarget: {
+				type: 'string',
+				default: '',
+			},
+			relAttribute: {
+				type: 'string',
+				default: '',
+			},
+			linkDescription: {
+				type: 'string',
+				default: '',
+			},
+		};
+	}
+
+	return {
+		...settings,
+		attributes: {
+			...settings.attributes,
+		},
+		edit: enhanceColumnBlock(settings.edit),
+		save:
+			isColumnBlock(name) && settings.save
+				? (props) => {
+						const { attributes } = props;
+						const {
+							linkUrl: colLinkUrl,
+							linkTarget: colLinkTarget,
+							relAttribute: colRelAttribute,
+							linkDescription: colLinkDescription,
+						} = attributes;
+						const saveElement = settings.save(props);
+
+						if (!colLinkUrl) {
+							return saveElement;
+						}
+
+						return (
+							<div {...saveElement.props}>
+								<a
+									href={colLinkUrl}
+									{...(colLinkTarget
+										? { target: colLinkTarget }
+										: {})}
+									{...(colRelAttribute
+										? { rel: colRelAttribute }
+										: {})}
+									className="wp-block-column-vk-link"
+								>
+									<span className="screen-reader-text">
+										{colLinkDescription
+											? colLinkDescription
+											: __('Column link', 'vk-blocks')}
+									</span>
+								</a>
+								{saveElement.props.children}
+							</div>
+						);
+					}
+				: settings.save,
+	};
+};
+
+addFilter(
+	'blocks.registerBlockType',
+	'custom/extend-column-block',
+	extendColumnBlock
+);

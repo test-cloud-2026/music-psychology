@@ -1,0 +1,88 @@
+/*-------------------------------------------*/
+/* Layout
+/*-------------------------------------------*/
+.vk_prContent {
+	@media (min-width: 576px) {
+		display: flex;
+		.col-sm-6 {
+			width: 50%;
+		}
+		&-layout {
+			&-imageLeft {
+				flex-direction: row;
+			}
+
+			&-imageRight {
+				flex-direction: row-reverse;
+			}
+
+			&-imageLeft .vk_prContent_colImg {
+				padding-right: 2em;
+				padding-left: 0;
+			}
+
+			&-imageRight .vk_prContent_colImg {
+				padding-left: 2em;
+				padding-right: 0;
+			}
+		}
+	} // @media (min-width: 768px) {
+}
+
+/*-------------------------------------------*/
+/* others
+/*-------------------------------------------*/
+// 編集画面でcssの指定が軽くて負けるので.vk_prContent .vk_prContent_colTxt を先に記述
+.vk_prContent {
+	& &_colTxt {
+		vertical-align: top;
+		.vk_prContent_colTxt_title { 
+			font-size: calc( 1rem * 1.75 );
+			background-color: transparent;
+			font-weight: bold;
+			margin-top: 0;
+			margin-bottom: 0.8em;
+			outline: unset;
+			outline-offset: unset;
+			box-shadow: unset;
+			border: none;
+			border-radius:unset;
+			padding: 0;
+			color: inherit;
+			line-height: 1.5;
+			text-align: left; /* 見出しに左右線デザインを当てられている場合があるので上書きする */
+			@media (max-width: 575.98px) {
+				&:first-child {
+					margin-top: 30px;
+				}
+			}
+			&:before,
+			&:after {
+				content: none;
+
+			}
+		}
+		&_text {
+			line-height: 1.8;
+			margin-bottom: 1.7em;
+		}
+		&_btn.btn {
+			@media (min-width: 992px) {
+				font-size: 16px;
+			}
+		}
+	} // .vk_prContent_colTxt
+	.vk_prContent_colImg {
+		&_image {
+			max-width: 100%;
+			height: auto;
+		}
+		.components-button.button {
+			margin: 1em;
+		}
+		.components-button.image-button {
+			margin: 0;
+			height: auto; //これがないとfirefoxの管理画面上でbutton内のimage画像が上にはみ出す
+		}
+	}
+} // .vk_prContent {

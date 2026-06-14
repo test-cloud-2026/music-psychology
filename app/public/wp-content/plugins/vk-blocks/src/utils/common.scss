@@ -1,0 +1,854 @@
+:root {
+	--vk-margin-elem:2rem;
+}
+
+.text-nowrap {
+	white-space: nowrap;
+}
+
+/*-------------------------------------------*/
+/* core/column をコンテンツ幅の半分のインナーブロックにする .is-vk-content-width-half 対応
+/*-------------------------------------------*/
+// front / editor 両方に適用
+.is-vk-content-width-half {
+	// TT5などテーマによっては border-box 指定がなくてレイアウトが崩れるため
+	box-sizing: border-box;
+}
+:where(:not(.is-vk-row-reverse)) > :first-child.is-vk-content-width-half,
+:where(.is-vk-row-reverse) > :nth-child(2).is-vk-content-width-half {
+	// 100svh では編集画面でパネルの幅などを含んでしまうため100%を使用
+	padding-left:calc( ( 100% - var(--wp--style--global--content-size) ) / 2 ) !important;
+}
+:where(:not(.is-vk-row-reverse)) > :nth-child(2).is-vk-content-width-half,
+:where(.is-vk-row-reverse) > :first-child.is-vk-content-width-half {
+	padding-right:calc( ( 100% - var(--wp--style--global--content-size) ) / 2 ) !important;
+}
+// カラムの幅に 50% 指定がない場合にも幅がバラけないように対応
+.wp-block-columns:has(.is-vk-content-width-half) {
+	& > :where(.wp-block-column) {
+		max-width: 50%;
+	}
+}
+@media (max-width: 781.98px) {
+	// モバイルで縦積みの場合のみ打ち消し
+	.wp-block-columns:where(:not(.is-not-stacked-on-mobile)){
+		// 各カラムのスタイルでPC用で中央側に padding を指定するのが一般的なため、!importantをつけないと上書きできない
+		.is-vk-content-width-half{
+			padding-left:0 !important;
+			padding-right:0 !important;
+			&.is-layout-flow > * {
+				// .is-layout-flow でも左右ベタ付けにならずにコンテンツ幅に抑える（.is-layout-constrainedと同じ挙動にする）ため
+				max-width: var(--wp--style--global--content-size);
+				margin-left: auto !important;
+    			margin-right: auto !important;
+			}
+		}
+		.has-global-padding .is-vk-content-width-half {
+			padding-right: var(--wp--style--root--padding-right) !important;
+			padding-left: var(--wp--style--root--padding-left) !important;
+		}
+		&:has(.is-vk-content-width-half) {
+			& > :where(.wp-block-column) {
+				max-width: 100%;
+			}
+		}
+	}
+}
+
+/*-------------------------------------------*/
+/* 蛍光マーカー
+/*-------------------------------------------*/
+@mixin vk-highlighter-gradient($direction: null) {
+	@if $direction == null {
+		background-image: linear-gradient(transparent 60%, var(--vk-highlighter-color) 0);
+	} @else {
+		background-image: linear-gradient(#{$direction}, transparent 60%, var(--vk-highlighter-color) 0);
+	}
+}
+
+.vk_highlighter,
+[class*="--vk-highlighter"] {
+	@include vk-highlighter-gradient();
+}
+[style*="vertical-rl"] .vk_highlighter,
+[style*="vertical-rl"] [class*="--vk-highlighter"] {
+	@include vk-highlighter-gradient(to left);
+}
+[style*="vertical-lr"] .vk_highlighter,
+[style*="vertical-lr"] [class*="--vk-highlighter"] {
+	@include vk-highlighter-gradient(to right);
+}
+
+/*-------------------------------------------*/
+/* 余白（レスポンシブスペーサー,共通余白で使用）
+/*-------------------------------------------*/
+:root {
+	--vk-margin-xxs : 0.375rem;
+	--vk-margin-xs : 0.75rem;
+	--vk-margin-sm : 1.5rem;
+	--vk-margin-md : 2.4rem;
+	--vk-margin-lg : 4rem;
+	--vk-margin-xl : 6rem;
+	--vk-margin-xxl : 9rem;
+}
+.vk_block{
+	&-margin-0 {
+		&--margin-top {
+			margin-top: 0 !important;
+			& > table { //テーマ側でtableにmargin-bottom や margin-top の余白がついている場合、完全に0にならないので必要
+				margin-top:0;
+			}
+		}
+		&--margin-bottom {
+			margin-bottom: 0 !important;
+			& > table { //テーマ側でtableにmargin-bottom や margin-top の余白がついている場合、完全に0にならないので必要
+				margin-bottom:0;
+			}
+		}
+	}
+	&-margin-xxs {
+		margin-top: var(--vk-margin-xxs); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-xxs) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-xxs) !important;
+		}
+		&--height {
+			height: var(--vk-margin-xxs);
+		}
+	}
+	&-margin-xs {
+		margin-top: var(--vk-margin-xs); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-xs) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-xs) !important;
+		}
+		&--height {
+			height: var(--vk-margin-xs);
+		}
+	}
+	&-margin-sm {
+		margin-top: var(--vk-margin-sm); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-sm) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-sm) !important;
+		}
+		&--height {
+			height: var(--vk-margin-sm);
+		}
+	}
+	&-margin-md {
+		margin-top: var(--vk-margin-md); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-md) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-md) !important;
+		}
+		&--height {
+			height: var(--vk-margin-md);
+		}
+	}
+	&-margin-lg {
+		margin-top: var(--vk-margin-lg); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-lg) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-lg) !important;
+		}
+		&--height {
+			height: var(--vk-margin-lg);
+		}
+	}
+	&-margin-xl {
+		margin-top: var(--vk-margin-xl); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-xl) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-xl) !important;
+		}
+		&--height {
+			height: var(--vk-margin-xl);
+		}
+	}
+	&-margin-xxl {
+		margin-top: var(--vk-margin-xxl); /* 旧バージョンでdeprecatedが走ってない状態のfallback */
+		&--margin-top {
+			margin-top: var(--vk-margin-xxl) !important;
+		}
+		&--margin-bottom {
+			margin-bottom: var(--vk-margin-xxl) !important;
+		}
+		&--height {
+			height: var(--vk-margin-xxl);
+		}
+	}
+}
+
+/*-------------------------------------------*/
+/* パレット設定
+/*-------------------------------------------*/
+$stylePalette: (
+	is-style-vk-arrow-mark: "\f138",
+	is-style-vk-triangle-mark: "\f0da",
+	is-style-vk-check-mark: "\f00c",
+	is-style-vk-check-circle-mark: "\f058",
+	is-style-vk-check-square-mark: "\f14a",
+	is-style-vk-handpoint-mark: "\f0a4",
+	is-style-vk-pencil-mark: "\f303",
+	is-style-vk-smile-mark: "\f118",
+	is-style-vk-frown-mark: "\f119",
+	is-style-vk-circle-mark: "\f111",
+	is-style-vk-times-mark: "\f00d",
+);
+
+$colorPalette: (
+	(pale-pink, #f78da7),
+	(vivid-red, #cf2e2e),
+	(luminous-vivid-orange, #ff6900),
+	(luminous-vivid-amber, #fcb900),
+	(light-green-cyan, #7bdcb5),
+	(vivid-green-cyan, #00d084),
+	(pale-cyan-blue, #8ed1fc),
+	(vivid-cyan-blue, #0693e3),
+	(vivid-purple, #9b51e0),
+	(very-light-gray, #eee),
+	(cyan-bluish-gray, #abb8c3),
+	(very-dark-gray, #313131),
+	(white, #ffffff),
+	(color-primary, var(--wp--preset--color--vk-color-primary)),
+	(color-primary-dark, var(--wp--preset--color--vk-color-primary-dark)),
+	(color-primary-vivid, var(--wp--preset--color--vk-color-primary-vivid)),
+	(color-custom-1, var(--wp--preset--color--vk-color-custom-1)),
+	(color-custom-2, var(--wp--preset--color--vk-color-custom-2)),
+	(color-custom-3, var(--wp--preset--color--vk-color-custom-3)),
+	(color-custom-4, var(--wp--preset--color--vk-color-custom-4)),
+	(color-custom-5, var(--wp--preset--color--vk-color-custom-5))
+);
+
+/*-------------------------------------------*/
+/* カラー設定
+/*-------------------------------------------*/
+@each $colorClass, $color in $colorPalette {
+	:root {
+		// 一般的なカラー設定
+		.vk-has-#{"#{$colorClass}"}-background-color,
+		.has-vk-#{"#{$colorClass}"}-background-color {
+			@if $colorClass == color-primary {
+				// color-primaryに関する特殊処理
+				background-color: var(--wp--preset--color--vk-color-primary, #337ab7);
+			} @else {
+				background-color: #{$color};
+			}
+		}
+
+		.vk-has-#{"#{$colorClass}"}-color,
+		.has-vk-#{"#{$colorClass}"}-color {
+			@if $colorClass == color-primary {
+				// color-primaryに関する特殊処理
+				color: var(--wp--preset--color--vk-color-primary, #337ab7);
+			} @else {
+				color: #{$color};
+			}
+		}
+	}
+}
+
+/*-------------------------------------------*/
+/* リストデザイン
+/*-------------------------------------------*/
+@mixin mark-before {
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	position: absolute;
+}
+
+.wp-block-list {
+	&.is-style {
+		&-default,
+		&-vk-arrow-mark,
+		&-vk-triangle-mark,
+		&-vk-check-mark,
+		&-vk-check-circle-mark,
+		&-vk-check-square-mark,
+		&-vk-handpoint-mark,
+		&-vk-pencil-mark,
+		&-vk-smile-mark,
+		&-vk-frown-mark,
+		&-vk-circle-mark,
+		&-vk-times-mark,
+		&-vk-numbered-circle-mark,
+		&-vk-numbered-square-mark {
+			padding-inline-start: 2em;
+			&:not(.has-text-color),
+			&:not(.has-link-color) {
+				color: inherit;
+			}
+			&:where(:not(.is-style-default)) {
+				line-height: calc( 1rem * 1.65 );
+				li {
+					list-style: none;
+					position: relative;
+					margin-top:0;
+					margin-left: 0;
+					margin:calc( 1rem * 0.8 ) 0;
+				}
+			}
+		}
+	}
+
+	&.is-style-vk-numbered-circle-mark {
+		counter-reset: number;
+		list-style-type: none;
+
+		li {
+			--vk-numbered-marker-leading: 0px;
+			position: relative;
+			list-style: none;
+			padding-left: .5em;
+			&:before {
+				position: absolute;
+				left: 0;
+				top: var( --vk-numbered-marker-leading, 0 );
+				counter-increment: number;
+				content: counter(number);
+				margin-left: -1.8em;
+				background: #222;
+				color: #fff;
+				text-indent: 0;
+				display: inline-block;
+				font-weight: bold;
+				border-radius: 50%;
+				font-size: calc( 1rem * 1 );
+				line-height: calc( 1rem * 1.8 );
+				width: 26px;
+				height: 26px;
+				text-align: center;
+			}
+
+			ul,
+			ol {
+				counter-reset: num_inner;
+				content: counter(num_inner);
+
+				li {
+					&:before {
+						counter-increment: num_inner;
+						content: counter(num_inner);
+					}
+				}
+			}
+		}
+	}
+
+	&.is-style-vk-numbered-square-mark {
+		counter-reset: number;
+		list-style-type: none;
+
+		li {
+			--vk-numbered-marker-leading: 0px;
+			position: relative;
+			list-style: none;
+			padding-left: .5em;
+			&:before {
+				position: absolute;
+				left: -0.3em;
+				top: var( --vk-numbered-marker-leading, 0 );
+				counter-increment: number;
+				content: counter(number);
+				margin-left: -25px;
+				background: #222;
+				color: #fff;
+				text-indent: 0;
+				display: inline-block;
+				font-weight: bold;
+				font-size: calc( 1rem * 1 );
+				line-height: calc( 1rem * 1.8 );
+				width: 26px;
+				height: 26px;
+				text-align: center;
+				border-radius: 2px;
+			}
+
+			ul,
+			ol {
+				counter-reset: num_inner;
+				content: counter(num_inner);
+
+				li {
+					&:before {
+						counter-increment: num_inner;
+						content: counter(num_inner);
+					}
+				}
+			}
+		}
+	}
+
+	&.is-style-vk-numbered-circle-mark,
+	&.is-style-vk-numbered-square-mark {
+		--vk-numbered-default-line-height-length: calc( 1rem * 1.65 );
+
+		li {
+			--vk-numbered-marker-leading: max(
+				calc(
+					(
+						var( --vk-numbered-line-height-length, var( --vk-numbered-default-line-height-length ) )
+						- var( --vk-numbered-default-line-height-length )
+					) / 2
+				),
+				0px
+			);
+		}
+
+		&.fa-lg {
+			li::before {
+				left: -0.8em;
+			}
+		}
+
+		&.fa-2x {
+			li {
+				line-height: 1.25em;
+			}
+
+			li::before {
+				left: -1.1em;
+			}
+		}
+
+		&.fa-3x {
+			li {
+				line-height: 1.25em;
+			}
+
+			li::before {
+				left: -1.4em;
+			}
+		}
+
+		&.fa-4x {
+			li {
+				line-height: 1.25em;
+			}
+
+			li::before {
+				left: -1.5em;
+			}
+		}
+
+		&.fa-5x {
+			li {
+				line-height: 1.25em;
+			}
+
+			li::before {
+				left: -1.6em;
+			}
+		}
+	}
+
+	@each $styleClass, $faCode in $stylePalette {
+		&.#{$styleClass} {
+			li {
+				&::before {
+					@include mark-before;
+					content: $faCode;
+					left: -1.5em;
+				}
+			}
+		}
+		&.is-style-vk-default {
+			li {
+				&::before {
+					font-size: 22px;
+					line-height: 1.1em;
+				}
+			}
+		}
+	}
+
+	// Use FA Regular weight for hollow circle look on Circle style
+	&.is-style-vk-circle-mark {
+		li::before {
+			font-weight: 400;
+		}
+	}
+
+	@each $colorClass, $color in $colorPalette {
+		&.vk-has-#{"#{$colorClass}"}-color,
+		&.has-vk-#{"#{$colorClass}"}-color {
+			li::marker {
+				color: $color;
+			}
+			li::before {
+				color: $color;
+			}
+		}
+
+		&.is-style-vk-numbered-circle-mark,
+		&.is-style-vk-numbered-square-mark {
+			&.vk-has-#{"#{$colorClass}"}-color,
+			&.has-vk-#{"#{$colorClass}"}-color {
+				li::before {
+					color: #fff;
+					background-color: $color;
+				}
+			}
+		}
+
+	}
+}
+//ul,ol
+
+/*-------------------------------------------*/
+/* グループブロック　デザイン
+/*-------------------------------------------*/
+
+@mixin pad-mag {
+	padding: 1.8em;
+	margin-top: var( --vk-margin-elem );
+	margin-bottom: var( --vk-margin-elem );
+}
+@mixin inner-item-pad-mag {
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		margin-bottom: 1rem;
+	}
+	ul,
+	ol {
+		margin-top: 0;
+		li:last-child {
+			margin-bottom: 0;
+		}
+	}
+}
+
+.wp-block-group {
+	h3:first-child,
+	h4:first-child {
+		margin-top: 0;
+	}
+
+	/* *:last-child で指定するとブロックエディタでカラムの中にいれた時に枠の外にはみ出す */
+	p,
+	ul,
+	ol,
+	dl,
+	table,
+	.wp-block-columns {
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	@each $colorClass, $color in $colorPalette {
+		// 線の色パネル用（vk-has-*）→ テキスト色は変えない
+		&.vk-has-#{"#{$colorClass}"}-color {
+			color: inherit;
+			border-color: $color;
+			.wp-block-group__inner-container {
+				color: inherit;
+				border-color: $color;
+			}
+		}
+		// テキスト色用（has-vk-*）→ :rootルールに任せる
+		&.has-vk-#{"#{$colorClass}"}-color {
+			border-color: $color;
+			.wp-block-group__inner-container {
+				border-color: $color;
+			}
+		}
+	}
+} //.wp-block-group
+.is-style-vk-group {
+	&-solid {
+		border: solid 3px;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-solid-roundcorner {
+		border: solid 3px;
+		border-radius: 8px;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-dotted {
+		border: dotted 1px;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-dashed {
+		border: dashed 2px;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-double {
+		border: double 5px;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-stitch {
+		position: relative;
+		margin: 1em auto;
+		padding: 2.3em;
+		border-radius: 8px;
+		&::before {
+			content: "";
+			position: absolute;
+			top: .5em;
+			left: .5em;
+			width: calc(100% - 1em);
+			height: calc(100% - 1em);
+			border: dashed 2px;
+			border-color: inherit;
+			border-radius: 8px;
+			pointer-events: none;
+		}
+		//@include inner-item-pad-mag;
+		// thema.jsonでは .wp-block-group__inner-container がつかないためコメントアウト
+		//.wp-block-group__inner-container {
+		//	border: dashed 2px;
+		//	border-radius: 8px;
+		//	padding: 1.8em;
+		// }
+	}
+	&-top-bottom-border {
+		border-top: solid 1px;
+		border-bottom: solid 1px;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+		padding-left: 0;
+		padding-right: 0;
+	}
+	&-shadow {
+		box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-alert-info {
+		background-color: #d9edf7;
+		color: #31708f;
+		border-radius: 3px;
+		border: 1px solid #bce8f1;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-alert-success {
+		background-color: #dff0d8;
+		color: #3c763d;
+		border-radius: 3px;
+		border: 1px solid #d6e9c6;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-alert-warning {
+		background-color: #fcf8e3;
+		color: #8a6d3b;
+		border-radius: 3px;
+		border: 1px solid #faebcc;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+	&-alert-danger {
+		background-color: #f2dede;
+		color: #a94442;
+		border-radius: 3px;
+		border: 1px solid #ebccd1;
+		@include pad-mag;
+		@include inner-item-pad-mag;
+	}
+}
+
+
+/*-------------------------------------------*/
+/* Group Block
+/*-------------------------------------------*/
+.editor-styles-wrapper .wp-block-group {
+	// これがないとコアに勝手にwidthが左右1em余白をあけられる
+	// → だがしかし Grid Column 2 で中の要素が勝手に小さくされるので一旦コメントアウト
+	.wp-block{
+		// width:auto;
+	}
+}
+
+/*-------------------------------------------*/
+/* YouTube
+/*-------------------------------------------*/
+.wp-block-embed {
+	&-youtube {
+		iframe {
+			width: 100%;
+		}
+	}
+}
+
+.has-text-align-right {
+	text-align: right;
+}
+.has-text-align-left {
+	text-align: left;
+}
+.has-text-align-center {
+	text-align: center;
+}
+
+/*-------------------------------------------*/
+/* ソーシャルアイコン
+/*-------------------------------------------*/
+.wp-block-social-links{
+	flex-wrap: wrap;
+}
+
+/*-------------------------------------------*/
+/* Swiper
+/*-------------------------------------------*/
+:root {
+	--vk-color-background-white-translucent:rgba(255, 255, 255, 0.5);
+}
+
+.vk_slider,
+.vk_post_list_slider {
+	//共通ではないためvk_sliderの中に格納
+	height: auto; //100%だとサイトエディター画面でおかしくなるのでautoに
+	position: relative;
+	.swiper-wrapper {
+		height: auto; //100%だとおかしくなるのでautoに
+		transition-timing-function: cubic-bezier(0.77, 0.2, 0.05, 1);
+	}
+	//vk_slider用のnextとprevボタン	
+	.swiper-button-next,
+	.swiper-button-prev {
+		color: var(--vk-color-text-body);
+		background-color: var(--vk-color-background-white-translucent);
+		border-radius: var(--vk-size-radius);
+		background-image: none;
+		width: 2.4rem;
+		height: 2.4rem;
+		z-index: 20;
+		&:after {
+			font-size: 1.2rem;
+		}
+	}
+
+}
+
+.swiper-container {
+	/* vk_width-full は廃止になったが互換処理のために 2022年10月末までは残す */
+	&.vk_width-full {
+		//全幅の時
+		margin: 0 calc(50% - 50vw);
+		width: 100vw;
+	}
+	&-horizontal{
+		>.swiper-pagination-bullets {
+			.swiper-pagination-bullet{
+				margin: 0 5px;
+			}
+		}
+	}
+}
+
+// ↓ これ要る？
+.swiper-slide {
+	height: auto; //100%だとおかしくなるのでautoに
+	font-size: 18px;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+//paginationの親枠
+.swiper-container-horizontal>.swiper-pagination-bullets{
+	padding-left:3.2rem;
+	padding-right:3.2rem;
+	box-sizing: border-box; //他のFSEテーマではみ出るので追加
+}
+//pagination
+.swiper-pagination{
+	pointer-events: none;
+	//標準
+	&-bullet{ 
+		border-radius: unset;
+		width: 30px;
+		height: 5px;
+		background-color: #ccc;
+		opacity: unset;
+		outline: 1px solid var(--vk-color-background-white-translucent);
+		pointer-events: auto;
+		&-active {
+			background: #666;
+		}
+	}
+	//標準以外（スライドの枚数）
+	&.swiper-pagination-fraction:not(.swiper-pagination-bullets){
+		width: auto;
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--vk-color-background-white-translucent);
+		padding: 0.4rem 1.5rem;
+		border-radius: 30px;
+		bottom: 5px;
+	}
+}
+
+//矢印ボタン モバイルは下部
+@media (max-width: 575.98px) {
+	.swiper-button-next, 
+	.swiper-button-prev{
+		&.swiper-button-mobile-bottom{
+		top:unset;
+		bottom: 10px;
+		}
+	}
+}
+
+/*-------------------------------------------*/
+/* col-xxl
+/*-------------------------------------------*/
+$xxl-min: 1400px;
+.col {
+	// Bootstrap4 では xxl サイズがないので独自に追加
+	@media (min-width: $xxl-min) {
+		&-xxl-2 {
+			flex: 0 0 16.66667%;
+			max-width: 16.66667%;
+		}
+		&-xxl-3 {
+			flex: 0 0 25%;
+			max-width: 25%;
+		}
+		&-xxl-4 {
+			flex: 0 0 33.33333%;
+			max-width: 33.33333%;
+		}
+		&-xxl-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+		&-xxl-12 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+	}
+}
+
+/*-------------------------------------------*/
+/* カラム
+/*-------------------------------------------*/
+.wp-block-columns {
+	/* カラムの方向 */
+	&.wp-block-columns.is-vk-row-reverse {
+		flex-direction: row-reverse;
+	}
+}
