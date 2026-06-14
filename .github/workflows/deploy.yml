@@ -1,0 +1,55 @@
+# =============================================
+# deploy.yml — OtotoScreen 本番自動デプロイ
+#
+# やること：
+# main ブランチに push するたびに
+# lightning-child テーマを lolipop の本番サーバーに
+# FTP で自動転送する
+# =============================================
+
+name: 本番サーバーへ自動デプロイ
+
+on:
+  push:
+    branches:
+      - main          # main ブランチへの push 時だけ実行
+    paths:
+      # テーマファイルが変更された時だけデプロイする
+      # 関係ないファイルの push では実行しない
+      - 'app/public/wp-content/themes/lightning-child/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: リポジトリのコードを取得
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      # Step 2: FTP でロリポップに転送する
+      # SamKirkland/FTP-Deploy-Action は差分だけ転送するので効率的
+      - name: lolipop へ FTP デプロイ
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          # 接続情報（GitHub Secrets から取得）
+          server:   ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+
+          # ローカルの転送元フォルダ
+          local-dir: ./app/public/wp-content/themes/lightning-child/
+
+          # サーバー上の転送先フォルダ
+          # FTP ログイン後のホームディレクトリからの相対パス
+          server-dir: ototo-design/ototoscreen/wp-content/themes/lightning-child/
+
+          # FTPS（暗号化あり）で接続する
+          protocol: ftps
+
+          # 転送しないファイル・フォルダ
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
