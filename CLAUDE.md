@@ -1,7 +1,8 @@
-# CLAUDE.md — samurai-sample (music-psychology)
+# CLAUDE.md — OtotoScreen
 
 ## プロジェクト概要
 
+「音楽にまつわる映画」キュレーションサイト **OtotoScreen** の開発リポジトリ。
 Local by Flywheel で動作する WordPress サイト。
 テーマは Lightning + 子テーマ（lightning-child）を使用。
 
