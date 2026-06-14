@@ -1,3 +1,4 @@
+// ブレークポイント
 $xs-max: 575.98px;
 $sm-max: 767.98px;
 $md-max: 991.98px;
@@ -7,3 +8,14 @@ $sm-min: 576px;
 $md-min: 768px;
 $lg-min: 992px;
 $xl-min: 1200px;
+
+// OtotoScreen カラーパレット
+$color-accent:     #C4B5A5; // メインカラー（ベージュ）
+$color-text:       #333333; // テキスト
+$color-link:       #2A2A2A; // リンク
+$color-meta:       #999999; // 日付・補足テキスト
+$color-border:     #E8E4E0; // ボーダー
+$color-bg-light:   #F9F7F5; // 薄い背景（フッターなど）
+
+// タイポグラフィ
+$font-base:        'Noto Sans JP', sans-serif;

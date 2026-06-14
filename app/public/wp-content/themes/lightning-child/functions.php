@@ -12,7 +12,7 @@
  */
 
 // 独自のCSSファイル（assets/css/）を読み込む場合は true に変更してください.
-$my_lightning_additional_css = false;
+$my_lightning_additional_css = true;
 
 if ( $my_lightning_additional_css ) {
 	// 公開画面側のCSSの読み込み.
@@ -40,6 +40,21 @@ if ( $my_lightning_additional_css ) {
 		}
 	);
 }
+
+/************************************************
+ * Google Fonts（Noto Sans JP）の読み込み
+ */
+add_action(
+	'wp_enqueue_scripts',
+	function() {
+		wp_enqueue_style(
+			'ototoscreen-google-fonts',
+			'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap',
+			array(),
+			null
+		);
+	}
+);
 
 /************************************************
  * 独自の処理を必要に応じて書き足します

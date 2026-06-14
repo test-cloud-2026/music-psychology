@@ -1,0 +1,235 @@
+// ==============================================
+// OtotoScreen — 子テーマ カスタムスタイル
+// ==============================================
+
+// ベース
+body {
+  font-family: $font-base;
+  color: $color-text;
+}
+
+// リンク
+a {
+  color: $color-link;
+  transition: color 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    color: $color-accent;
+    text-decoration: none;
+  }
+}
+
+// =============================================
+// パンくずリスト（カスタマイザーにない設定）
+// =============================================
+
+// VKパンくず / Lightningパンくず
+.vk-breadcrumbs,
+.breadcrumb,
+#breadcrumb {
+  display: block !important; // テーマ側で非表示になる場合に強制表示
+  font-size: 0.78rem;
+  color: $color-meta;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+
+  a {
+    color: $color-meta;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-accent;
+    }
+  }
+
+  // 区切り文字
+  .vk-breadcrumbs__item + .vk-breadcrumbs__item::before,
+  li + li::before {
+    content: '›';
+    margin: 0 0.4em;
+    color: $color-border;
+  }
+}
+
+// =============================================
+// 投稿日・更新日（カスタマイザーにない設定）
+// =============================================
+
+// 投稿メタ情報のコンテナ
+.entry-meta,
+.vk-post-meta,
+.post-meta {
+  font-size: 0.78rem;
+  color: $color-meta;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+// 投稿日
+.posted-on,
+.entry-date.published,
+time.published {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  color: $color-meta;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 4px;
+  }
+}
+
+// 更新日
+.updated:not(.published) {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  color: $color-meta;
+
+  // 更新日は「更新：」ラベル付きで表示
+  &::before {
+    content: '更新：';
+    font-size: 0.72rem;
+  }
+}
+
+// =============================================
+// 記事カード サムネイル
+// =============================================
+
+// カードのサムネイル比率（映画ポスター = 2:3）
+.vk-post-list-item__thumbnail,
+.vk-post-card__thumbnail {
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+}
+
+// 通常のアイキャッチ（記事詳細ページ）
+.entry-thumbnail img,
+.vk-post-card .post-thumbnail img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+// =============================================
+// フッター
+// =============================================
+
+.site-footer,
+#footer,
+.vk-footer {
+  background-color: $color-bg-light;
+  border-top: 1px solid $color-border;
+  color: $color-text;
+  font-size: 0.85rem;
+
+  a {
+    color: $color-text;
+
+    &:hover {
+      color: $color-accent;
+    }
+  }
+}
+
+// =============================================
+// ボタン
+// =============================================
+
+.btn-primary,
+.wp-block-button__link {
+  background-color: $color-accent;
+  border-color: $color-accent;
+  border-radius: 2px;
+  color: #fff;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    background-color: darken($color-accent, 10%);
+    border-color: darken($color-accent, 10%);
+    color: #fff;
+    opacity: 1;
+  }
+}
+
+// =============================================
+// 見出し
+// =============================================
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-base;
+  font-weight: 700;
+  color: $color-text;
+  line-height: 1.5;
+}
+
+// 記事内のh2（区切り線スタイル）
+.entry-content h2 {
+  border-bottom: 2px solid $color-accent;
+  padding-bottom: 0.4rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+// =============================================
+// 記事詳細ページ
+// =============================================
+
+.entry-content {
+  p {
+    line-height: 1.9;
+    margin-bottom: 1.25rem;
+  }
+
+  // 映画情報テーブル（main.py が出力する <ul>）
+  ul {
+    padding-left: 1.25rem;
+
+    li {
+      margin-bottom: 0.4rem;
+      line-height: 1.7;
+    }
+  }
+
+  // 公式ポスター + イラストの横並び
+  figure {
+    margin: 0;
+
+    figcaption {
+      font-size: 0.75rem;
+      color: $color-meta;
+      text-align: center;
+      margin-top: 0.4rem;
+    }
+  }
+}
+
+// =============================================
+// レスポンシブ
+// =============================================
+
+// 記事内の横並び（モバイルでは縦積み）
+@media (max-width: $sm-max) {
+  .entry-content div[style*="display:flex"],
+  .entry-content div[style*="display: flex"] {
+    flex-direction: column !important;
+  }
+}

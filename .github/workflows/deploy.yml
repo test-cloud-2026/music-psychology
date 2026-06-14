@@ -32,7 +32,19 @@ jobs:
       - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
 
-      # Step 2: FTP でロリポップに転送する
+      # Step 2: Node.js をセットアップして SCSS をコンパイルする
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: npm install & SCSS ビルド
+        working-directory: ./app/public/wp-content/themes/lightning-child
+        run: |
+          npm ci
+          npm run build:css
+
+      # Step 3: FTP でロリポップに転送する
       # SamKirkland/FTP-Deploy-Action は差分だけ転送するので効率的
       - name: lolipop へ FTP デプロイ
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
