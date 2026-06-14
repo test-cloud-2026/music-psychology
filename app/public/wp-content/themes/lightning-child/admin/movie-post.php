@@ -146,7 +146,7 @@ function osGenerate() {
 		'⏳ Claude が紹介文を生成中… （30秒ほどかかります）',
 		'⏳ Claude がイラストシーンを考案中…',
 		'⏳ gpt-image-1 がイラストを生成中… （60秒ほどかかります）',
-		'⏳ Claude がGIM視点の解説を生成中…',
+		'⏳ Claude が音楽と心理の解説を生成中…',
 		'⏳ YouTube予告編を取得中…',
 		'⏳ WordPress に記事を投稿中…',
 	];

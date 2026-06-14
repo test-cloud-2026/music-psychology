@@ -144,16 +144,16 @@ Description: {$description}";
 }
 
 function ototoscreen_generate_gim_commentary( $title, $description ) {
-	$prompt = "あなたはGIM（Guided Imagery and Music：音楽誘導イメージ療法）の実践者です。
-以下の映画における音楽の使われ方について、GIMの視点から150〜200文字程度で解説してください。
+	$prompt = "あなたは音楽心理学の専門家です。
+以下の映画における音楽の使われ方について、心理学の視点から200〜250文字程度で解説してください。
 
 【映画タイトル】{$title}
 【映画の紹介】{$description}
 
 条件：
-- 音楽が感情・記憶・想像力・癒しにどう作用しているかに注目する
-- GIM実践者ならではの視点を入れる
-- 一般の映画ファンにも分かりやすい言葉で書く
+- 映画の音楽が登場人物の心理描写をどのように強化・表現しているかに注目する
+- 視聴者側に音楽がどのような心理的効果（感情移入・緊張・解放感など）をもたらしているかも触れる
+- 音楽心理学の知見を活かしつつ、一般の映画ファンにも分かりやすい言葉で書く
 - 解説文のみを出力する（見出し不要）";
 
 	return ototoscreen_claude_request( $prompt, 600 );
@@ -283,7 +283,7 @@ function ototoscreen_build_content( $movie, $description, $illustration_url, $gi
 
 	if ( $gim_commentary ) {
 		$content .= "
-<h2>音楽の使われ方（GIM視点の解説）</h2>
+<h2>音楽と心理</h2>
 <p>" . esc_html( $gim_commentary ) . "</p>
 ";
 	}
