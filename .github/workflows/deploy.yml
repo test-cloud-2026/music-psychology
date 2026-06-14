@@ -18,6 +18,9 @@ on:
       # 関係ないファイルの push では実行しない
       - 'app/public/wp-content/themes/lightning-child/**'
 
+  # GitHub の画面から手動実行もできるようにする
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
