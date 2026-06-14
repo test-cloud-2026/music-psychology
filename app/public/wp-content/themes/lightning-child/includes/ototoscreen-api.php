@@ -303,12 +303,16 @@ function ototoscreen_build_content( $movie, $description, $illustration_url, $gi
 }
 
 function ototoscreen_create_draft( $title, $content, $media_id = null ) {
+	// iframeを含む自動生成コンテンツを保存するため、管理者権限下でKSESフィルターを一時解除する。
+	// この関数は manage_options チェック済みのAJAXハンドラからのみ呼ばれる。
+	kses_remove_filters();
 	$post_id = wp_insert_post( [
 		'post_title'   => sanitize_text_field( $title ),
-		'post_content' => wp_kses_post( $content ),
+		'post_content' => $content,
 		'post_status'  => 'draft',
 		'post_type'    => 'post',
 	] );
+	kses_add_filters();
 
 	if ( is_wp_error( $post_id ) ) return $post_id;
 
