@@ -58,7 +58,7 @@ if ( ! defined( 'ABSPATH' ) || ! current_user_can( 'manage_options' ) ) exit;
 .os-card .os-title     { font-weight:600; font-size:15px; margin:0 0 4px; }
 .os-card .os-year      { font-size:12px; color:#888; margin:0 0 6px; }
 .os-card .os-overview  { font-size:13px; color:#555; margin:0;
-	display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+	display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 </style>
 
 <script>
@@ -160,7 +160,7 @@ function osGenerate() {
 	jQuery.ajax({
 		url:     ajaxurl,
 		method:  'POST',
-		timeout: 200000, // 最大3分20秒待つ
+		timeout: 350000, // PHP の set_time_limit(300) より長く設定（5分50秒）
 		data:    { action: 'ototoscreen_generate', movie: JSON.stringify(osMovie), nonce: osNonce },
 		success: function( res ) {
 			clearInterval( timer );
