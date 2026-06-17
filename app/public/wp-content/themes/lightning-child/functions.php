@@ -120,12 +120,8 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 	// ① ポスターから色を抽出
 	$colors = ototoscreen_extract_colors( $poster_url );
 
-	// ② Claude: 日本語紹介文を生成
-	$description = ototoscreen_generate_description( $title, $overview, $release );
-	if ( is_wp_error( $description ) ) {
-		delete_transient( $lock_key );
-		wp_send_json_error( [ 'message' => 'Claude エラー（紹介文）: ' . $description->get_error_message() ] );
-	}
+	// ② TMDb の公式テキストをそのまま使用
+	$description = $overview;
 
 	// ③ Claude: イラストシーンを英語で考案
 	$scene = ototoscreen_generate_scene( $title, $description );
