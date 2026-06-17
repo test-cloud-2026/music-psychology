@@ -232,10 +232,9 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 	$style  = "minimalist one-line art, single continuous flowing black pen line on pure white background, "
 	        . "no color fill inside the outline, no shading, no cross-hatching, no internal detail lines, "
 	        . "only the essential outer contour drawn in one unbroken flowing stroke, "
-	        . "the main subject is drawn large and prominent, filling most of the horizontal canvas, "
-	        . "one soft organic {$color1} blob shape placed on the left side of the canvas "
-	        . "and one soft organic {$color2} blob shape placed on the right side, "
-	        . "the two blobs are placed independently and spread apart, not touching each other, "
+	        . "the main subject is drawn large and centered in the middle of the canvas, "
+	        . "one soft organic {$color1} blob shape and one soft organic {$color2} blob shape "
+	        . "are each placed independently across the canvas, spread apart from each other, "
 	        . "each blob is a flat muted solid shape with no outline sitting behind the black lines, "
 	        . "clean minimal editorial style, wide horizontal composition, ";
 	$prompt = $style . trim( $scene );
