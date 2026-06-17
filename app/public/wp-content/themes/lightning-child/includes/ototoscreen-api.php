@@ -250,7 +250,7 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		'body' => wp_json_encode( [
 			'input' => [
 				'prompt' => $prompt,
-				'style'  => 'vector_illustration/line_art',
+				'style'  => 'digital_illustration/hand_drawn_outline',
 				'size'   => '1024x1024',
 			],
 		] ),
