@@ -252,7 +252,7 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		'headers' => [
 			'Authorization' => 'Bearer ' . OTOTOSCREEN_REPLICATE_API_TOKEN,
 			'Content-Type'  => 'application/json',
-			'Prefer'        => 'wait=90',
+			'Prefer'        => 'wait=60',
 			'Cancel-After'  => '120s',
 		],
 		'body' => wp_json_encode( [
