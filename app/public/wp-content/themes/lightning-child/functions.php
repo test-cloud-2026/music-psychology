@@ -241,5 +241,15 @@ add_filter( 'the_content', function( $content ) {
 }, 10 );
 
 /************************************************
+ * 投稿タグをカテゴリーと同じチェックボックスUIにする
+ */
+add_filter( 'register_taxonomy_args', function( $args, $taxonomy ) {
+	if ( 'post_tag' === $taxonomy ) {
+		$args['hierarchical'] = true;
+	}
+	return $args;
+}, 10, 2 );
+
+/************************************************
  * 独自の処理を必要に応じて書き足します
  */
