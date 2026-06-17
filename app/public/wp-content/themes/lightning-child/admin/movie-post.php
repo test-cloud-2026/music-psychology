@@ -145,7 +145,7 @@ function osGenerate() {
 		'⏳ ポスターから色を抽出中…',
 		'⏳ Claude が紹介文を生成中… （30秒ほどかかります）',
 		'⏳ Claude がイラストシーンを考案中…',
-		'⏳ Replicate FLUX.1 [schnell] がイラストを生成中… （60秒ほどかかります）',
+		'⏳ recraft-v3 がイラストを生成中… （60〜90秒ほどかかります）',
 		'⏳ Claude が音楽と心理の解説を生成中…',
 		'⏳ YouTube予告編を取得中…',
 		'⏳ WordPress に記事を投稿中…',
