@@ -31,40 +31,70 @@ function ototoscreen_tmdb_search( $query ) {
 // =============================================
 
 function ototoscreen_extract_colors( $poster_url ) {
-	if ( ! $poster_url ) return 'warm beige and soft gray';
+	if ( ! $poster_url ) return 'warm terracotta and soft steel blue';
 
 	$response = wp_remote_get( $poster_url, [ 'timeout' => 15 ] );
-	if ( is_wp_error( $response ) ) return 'warm beige and soft gray';
+	if ( is_wp_error( $response ) ) return 'warm terracotta and soft steel blue';
 
-	if ( ! function_exists( 'imagecreatefromstring' ) ) return 'warm beige and soft gray';
+	if ( ! function_exists( 'imagecreatefromstring' ) ) return 'warm terracotta and soft steel blue';
 
 	$image = @imagecreatefromstring( wp_remote_retrieve_body( $response ) );
-	if ( ! $image ) return 'warm beige and soft gray';
+	if ( ! $image ) return 'warm terracotta and soft steel blue';
 
-	// 50×75 に縮小して高速処理
 	$thumb = imagecreatetruecolor( 50, 75 );
 	imagecopyresampled( $thumb, $image, 0, 0, 0, 0, 50, 75, imagesx( $image ), imagesy( $image ) );
 	imagedestroy( $image );
 
-	// 全ピクセルを色名バケツに仕分ける
-	$buckets = [];
+	$vivid_buckets  = []; // 彩度のある色（dominant・accent候補）
+	$neutral_buckets = []; // 中間トーンのグレー（vivid が少ない時の補完用）
+
 	for ( $x = 0; $x < 50; $x++ ) {
 		for ( $y = 0; $y < 75; $y++ ) {
 			$rgb  = imagecolorat( $thumb, $x, $y );
-			$name = ototoscreen_describe_color(
-				( $rgb >> 16 ) & 0xFF,
-				( $rgb >> 8 )  & 0xFF,
-				  $rgb         & 0xFF
-			);
-			$buckets[ $name ] = ( $buckets[ $name ] ?? 0 ) + 1;
+			$r    = ( $rgb >> 16 ) & 0xFF;
+			$g    = ( $rgb >> 8 )  & 0xFF;
+			$b    =   $rgb         & 0xFF;
+
+			$brightness = ( $r + $g + $b ) / 3;
+			if ( $brightness < 40 || $brightness > 220 ) continue; // ほぼ黒・白はスキップ
+
+			$max_ch = max( $r, $g, $b );
+			$min_ch = min( $r, $g, $b );
+			$sat    = $max_ch > 0 ? ( $max_ch - $min_ch ) / $max_ch : 0;
+
+			$name = ototoscreen_describe_color( $r, $g, $b );
+
+			if ( $sat > 0.18 && $name !== 'muted slate gray' ) {
+				$vivid_buckets[ $name ] = ( $vivid_buckets[ $name ] ?? 0 ) + 1;
+			} else {
+				$neutral_buckets[ $name ] = ( $neutral_buckets[ $name ] ?? 0 ) + 1;
+			}
 		}
 	}
 	imagedestroy( $thumb );
 
-	arsort( $buckets );
-	$top = array_keys( $buckets );
+	arsort( $vivid_buckets );
+	arsort( $neutral_buckets );
 
-	return ( $top[0] ?? 'very dark charcoal' ) . ' and ' . ( $top[1] ?? 'soft light cream' );
+	$vivid_keys   = array_keys( $vivid_buckets );
+	$neutral_keys = array_keys( $neutral_buckets );
+
+	// 支配色：最も頻度の高い鮮やかな色
+	$dominant = $vivid_keys[0] ?? $neutral_keys[0] ?? 'warm terracotta';
+
+	// アクセント色：支配色と異なる2番目の鮮やかな色
+	$accent = null;
+	foreach ( $vivid_keys as $k ) {
+		if ( $k !== $dominant ) { $accent = $k; break; }
+	}
+	if ( ! $accent ) {
+		foreach ( $neutral_keys as $k ) {
+			if ( $k !== $dominant ) { $accent = $k; break; }
+		}
+	}
+	$accent = $accent ?? 'soft steel blue';
+
+	return $dominant . ' and ' . $accent;
 }
 
 function ototoscreen_describe_color( $r, $g, $b ) {
@@ -133,11 +163,11 @@ function ototoscreen_generate_description( $title, $overview, $release_date ) {
 
 function ototoscreen_generate_scene( $title, $description ) {
 	$prompt = "The following is a Japanese movie description.
-Suggest ONE simple subject for a minimalist continuous line art illustration.
-Write ONLY the subject in English, 8 words or less.
-Choose: a hand gesture, a musical instrument detail, or a single symbolic object.
-Avoid full body figures, faces, rooms, crowds, backgrounds, or complex scenes.
-Good examples: \"a hand gently pressing piano keys\", \"a violin bow lifted in air\", \"a microphone tilted forward\"
+Suggest ONE iconic element for a minimalist single-line art illustration that best captures this movie's essence.
+Write ONLY the subject in English, 10 words or less.
+This can be a person in action, a character gesture, a key scene, an instrument, or a symbolic landscape.
+Focus on ONE central element — avoid complex compositions with multiple unrelated elements or crowds.
+Good examples: \"a kabuki actor mid-dance with fan raised\", \"hands pressing piano keys\", \"a lone violin on stage\", \"a dancer leaping\"
 
 Movie title: {$title}
 Description: {$description}";
@@ -194,11 +224,17 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		return new WP_Error( 'replicate_error', 'OTOTOSCREEN_REPLICATE_API_TOKEN が設定されていません。' );
 	}
 
-	$style  = "single continuous line art illustration, one unbroken thin black pen line on pure white background, "
-	        . "two soft organic blob shapes loosely placed behind the line drawing as color accents in muted {$colors}, "
-	        . "the color blobs are flat filled shapes with no outline and sit behind the lines, "
-	        . "the line drawing itself has no color fill, large white negative space, "
-	        . "minimalist elegant style, ";
+	// 2色を個別のブロブとして明示するために分割する
+	$color_parts = explode( ' and ', $colors, 2 );
+	$color1      = trim( $color_parts[0] ?? 'warm terracotta' );
+	$color2      = trim( $color_parts[1] ?? 'soft steel blue' );
+
+	$style  = "minimalist one-line art, single continuous flowing black pen line on pure white background, "
+	        . "no color fill inside the outline, no shading, no cross-hatching, no internal detail lines, "
+	        . "only the essential outer contour drawn in one unbroken flowing stroke, "
+	        . "two soft organic blob shapes floating behind the line drawing: one in {$color1} and one in {$color2}, "
+	        . "blobs are flat muted solid shapes with no outline sitting completely behind the black lines, "
+	        . "large white negative space, clean minimal editorial style, ";
 	$prompt = $style . trim( $scene );
 
 	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
