@@ -233,14 +233,15 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 	$color1      = trim( $color_parts[0] ?? 'warm terracotta' );
 	$color2      = trim( $color_parts[1] ?? 'soft steel blue' );
 
-	$style  = "minimalist one-line art, single continuous flowing black pen line on pure white background, "
-	        . "no color fill inside the outline, no shading, no cross-hatching, no internal detail lines, "
-	        . "only the essential outer contour drawn in one unbroken flowing stroke, "
+	$style  = "one stroke line art, the entire image is formed by a single unbroken pen stroke, "
+	        . "the pen never lifts from the paper, one continuous flowing line only, "
+	        . "pure white background, no fill, no shading, no cross-hatching, no multiple lines, "
+	        . "no internal details, just one simple flowing contour line tracing the whole subject, "
 	        . "the main subject is drawn large and centered in the middle of the canvas, "
 	        . "one soft organic {$color1} blob shape and one soft organic {$color2} blob shape "
 	        . "are each placed independently across the canvas, spread apart from each other, "
-	        . "each blob is a flat muted solid shape with no outline sitting behind the black lines, "
-	        . "clean minimal editorial style, wide horizontal composition, ";
+	        . "each blob is a flat muted solid shape with no outline sitting behind the line, "
+	        . "clean minimal editorial style, ";
 	$prompt = $style . trim( $scene );
 
 	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
