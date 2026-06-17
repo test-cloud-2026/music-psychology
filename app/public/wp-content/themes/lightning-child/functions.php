@@ -110,9 +110,8 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 	}
 
 	$movie_id    = intval( $movie['id'] ?? 0 );
-	$title       = $movie['title']        ?? 'タイトルなし';
-	$overview    = $movie['overview']     ?? '';
-	$release     = $movie['release_date'] ?? '';
+	$title       = $movie['title']    ?? 'タイトルなし';
+	$overview    = $movie['overview'] ?? '';
 	$poster_url  = ! empty( $movie['poster_path'] )
 		? 'https://image.tmdb.org/t/p/w500' . $movie['poster_path']
 		: '';
@@ -120,11 +119,15 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 	// ① ポスターから色を抽出
 	$colors = ototoscreen_extract_colors( $poster_url );
 
-	// ② TMDb の公式テキストをそのまま使用
-	$description = $overview;
+	// ② Claude: 音とスクリーン（音楽の効果・意味の解説）を生成
+	$oto_to_screen = ototoscreen_generate_oto_to_screen( $title, $overview );
+	if ( is_wp_error( $oto_to_screen ) ) {
+		delete_transient( $lock_key );
+		wp_send_json_error( [ 'message' => 'Claude エラー（音とスクリーン）: ' . $oto_to_screen->get_error_message() ] );
+	}
 
 	// ③ Claude: イラストシーンを英語で考案
-	$scene = ototoscreen_generate_scene( $title, $description );
+	$scene = ototoscreen_generate_scene( $title, $overview );
 	if ( is_wp_error( $scene ) ) {
 		delete_transient( $lock_key );
 		wp_send_json_error( [ 'message' => 'Claude エラー（シーン）: ' . $scene->get_error_message() ] );
@@ -144,16 +147,11 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 		wp_send_json_error( [ 'message' => '画像アップロードエラー: ' . $media->get_error_message() ] );
 	}
 
-	// ⑥ Claude: GIM視点の解説を生成
-	$gim_commentary = '';
-	$gim_result = ototoscreen_generate_gim_commentary( $title, $description );
-	if ( ! is_wp_error( $gim_result ) ) $gim_commentary = $gim_result;
-
-	// ⑦ TMDb: YouTube予告編を取得
+	// ⑥ TMDb: YouTube予告編を取得
 	$trailer_embed = ototoscreen_get_youtube_trailer( $movie_id );
 
-	// ⑧ 記事（下書き）を作成
-	$content = ototoscreen_build_content( $movie, $description, $media['url'], $gim_commentary, $trailer_embed );
+	// ⑦ 記事（下書き）を作成
+	$content = ototoscreen_build_content( $movie, $oto_to_screen, $media['url'], $trailer_embed );
 	$post_id = ototoscreen_create_draft( $title, $content, $media['id'] );
 	if ( is_wp_error( $post_id ) ) {
 		delete_transient( $lock_key );

@@ -179,20 +179,21 @@ Description: {$description}";
 	return ototoscreen_claude_request( $prompt, 200 );
 }
 
-function ototoscreen_generate_gim_commentary( $title, $description ) {
-	$prompt = "あなたは音楽心理学の専門家です。
-以下の映画における音楽の使われ方について、心理学の視点から200〜250文字程度で解説してください。
+function ototoscreen_generate_oto_to_screen( $title, $overview ) {
+	$prompt = "あなたは映画と音楽の関係を語るやさしいライターです。
+以下の映画について、音楽がどのような効果をもたらし、物語の中でどんな意味を持っているかを350〜450文字程度で書いてください。
 
 【映画タイトル】{$title}
-【映画の紹介】{$description}
+【あらすじ（参考）】{$overview}
 
 条件：
-- 映画の音楽が登場人物の心理描写をどのように強化・表現しているかに注目する
-- 視聴者側に音楽がどのような心理的効果（感情移入・緊張・解放感など）をもたらしているかも触れる
-- 音楽心理学の知見を活かしつつ、一般の映画ファンにも分かりやすい言葉で書く
-- 解説文のみを出力する（見出し不要）";
+- 映画のストーリーと音楽のつながりを自然な流れで紹介しながら解説する
+- 音楽が登場人物や観ている人にどんな感情・効果をもたらすかを語る
+- 心理学の専門用語は使わず、日常的でやわらかい言葉で表現する
+- 「〜のように感じる」「〜を後押しする」など感覚的な表現を使う
+- 文章のみを出力する（見出しや箇条書きは不要）";
 
-	return ototoscreen_claude_request( $prompt, 600 );
+	return ototoscreen_claude_request( $prompt, 1024 );
 }
 
 // =============================================
@@ -336,7 +337,7 @@ function ototoscreen_upload_illustration( $image_bytes, $movie_id ) {
 	];
 }
 
-function ototoscreen_build_content( $movie, $description, $illustration_url, $gim_commentary = '', $trailer_embed = '' ) {
+function ototoscreen_build_content( $movie, $oto_to_screen, $illustration_url, $trailer_embed = '' ) {
 	$title      = esc_html( $movie['title'] ?? 'タイトルなし' );
 	$release    = esc_html( $movie['release_date'] ?? '不明' );
 	$score      = esc_html( $movie['vote_average'] ?? '' );
@@ -359,15 +360,12 @@ function ototoscreen_build_content( $movie, $description, $illustration_url, $gi
   <li><strong>公開日：</strong>{$release}</li>
   <li><strong>評価：</strong>{$score} / 10</li>
 </ul>
-
-<h2>紹介</h2>
-<p>" . esc_html( $description ) . "</p>
 ";
 
-	if ( $gim_commentary ) {
+	if ( $oto_to_screen ) {
 		$content .= "
-<h2>音楽と心理</h2>
-<p>" . esc_html( $gim_commentary ) . "</p>
+<h2>音とスクリーン</h2>
+<p>" . esc_html( $oto_to_screen ) . "</p>
 ";
 	}
 
