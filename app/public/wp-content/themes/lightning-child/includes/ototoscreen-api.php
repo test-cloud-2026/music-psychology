@@ -341,6 +341,7 @@ function ototoscreen_build_content( $movie, $oto_to_screen, $illustration_url, $
 	$title      = esc_html( $movie['title'] ?? 'タイトルなし' );
 	$release    = esc_html( $movie['release_date'] ?? '不明' );
 	$score      = esc_html( $movie['vote_average'] ?? '' );
+	$overview   = esc_html( $movie['overview'] ?? '' );
 	$poster_url = ! empty( $movie['poster_path'] )
 		? esc_url( 'https://image.tmdb.org/t/p/w500' . $movie['poster_path'] )
 		: '';
@@ -360,7 +361,7 @@ function ototoscreen_build_content( $movie, $oto_to_screen, $illustration_url, $
   <li><strong>公開日：</strong>{$release}</li>
   <li><strong>評価：</strong>{$score} / 10</li>
 </ul>
-";
+" . ( $overview ? "<p>{$overview}</p>\n" : '' );
 
 	if ( $oto_to_screen ) {
 		$content .= "
