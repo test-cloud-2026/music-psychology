@@ -175,16 +175,14 @@ function osGenerate() {
 				'<a href="' + res.data.edit_url    + '" target="_blank" style="margin-right:16px;">📝 記事を編集する</a>' +
 				'<a href="' + res.data.preview_url + '" target="_blank">👁 プレビュー</a>';
 		},
-		error: function( jqXHR, textStatus ) {
+		error: function() {
 			clearInterval( timer );
 			btn.disabled = false;
 			btn.textContent = '✨ 記事を生成する';
-			if ( textStatus === 'timeout' ) {
-				msgEl.innerHTML = '⏳ 生成に時間がかかっています（通常3〜5分）。<br>'
-					+ '<a href="edit.php" target="_blank">投稿一覧</a> を数分後に確認してください。下書きが保存されています。';
-			} else {
-				msgEl.textContent = '❌ サーバーエラーが発生しました。再度お試しください。';
-			}
+			// Lolipopのnginxプロキシが先にタイムアウトするが、PHPは完走して記事を作成している
+			msgEl.innerHTML = '⏳ 生成に時間がかかっています（画像生成で3〜5分かかる場合があります）。<br>'
+				+ '数分後に <a href="edit.php" target="_blank" style="font-weight:bold;">投稿一覧</a> を確認してください。'
+				+ '<br><small style="color:#888; font-size:12px;">下書きとして保存されているはずです。</small>';
 		},
 	});
 }
