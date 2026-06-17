@@ -133,9 +133,11 @@ function ototoscreen_generate_description( $title, $overview, $release_date ) {
 
 function ototoscreen_generate_scene( $title, $description ) {
 	$prompt = "The following is a Japanese movie description.
-Suggest one simple scene for a minimalist line art illustration that captures the essence of this movie.
-Write ONLY the scene description in English, in 15 words or less.
-Focus on a single subject (person, instrument, or symbolic object).
+Suggest ONE simple subject for a minimalist continuous line art illustration.
+Write ONLY the subject in English, 8 words or less.
+Choose: a hand gesture, a musical instrument detail, or a single symbolic object.
+Avoid full body figures, faces, rooms, crowds, backgrounds, or complex scenes.
+Good examples: \"a hand gently pressing piano keys\", \"a violin bow lifted in air\", \"a microphone tilted forward\"
 
 Movie title: {$title}
 Description: {$description}";
@@ -192,7 +194,11 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		return new WP_Error( 'replicate_error', 'OTOTOSCREEN_REPLICATE_API_TOKEN が設定されていません。' );
 	}
 
-	$style  = "one continuous line drawing, single line art style, minimalist black thin line on white background, subtle muted color accent shapes in {$colors}, elegant and clean, no color fill, white background, ";
+	$style  = "single continuous line art illustration, one unbroken thin black pen line on pure white background, "
+	        . "two soft organic blob shapes loosely placed behind the line drawing as color accents in muted {$colors}, "
+	        . "the color blobs are flat filled shapes with no outline and sit behind the lines, "
+	        . "the line drawing itself has no color fill, large white negative space, "
+	        . "minimalist elegant style, ";
 	$prompt = $style . trim( $scene );
 
 	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
@@ -205,10 +211,12 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		],
 		'body' => wp_json_encode( [
 			'input' => [
-				'prompt'        => $prompt,
-				'aspect_ratio'  => '1:1',
-				'num_outputs'   => 1,
-				'output_format' => 'png',
+				'prompt'               => $prompt,
+				'aspect_ratio'         => '1:1',
+				'num_outputs'          => 1,
+				'output_format'        => 'png',
+				'num_inference_steps'  => 4,    // schnell の最大値（品質優先）
+				'go_fast'              => false, // fp8量子化を無効にして品質を上げる
 			],
 		] ),
 	] );

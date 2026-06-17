@@ -175,11 +175,16 @@ function osGenerate() {
 				'<a href="' + res.data.edit_url    + '" target="_blank" style="margin-right:16px;">📝 記事を編集する</a>' +
 				'<a href="' + res.data.preview_url + '" target="_blank">👁 プレビュー</a>';
 		},
-		error: function() {
+		error: function( jqXHR, textStatus ) {
 			clearInterval( timer );
 			btn.disabled = false;
 			btn.textContent = '✨ 記事を生成する';
-			msgEl.textContent = '❌ タイムアウトまたはサーバーエラーが発生しました。再度お試しください。';
+			if ( textStatus === 'timeout' ) {
+				msgEl.innerHTML = '⏳ 生成に時間がかかっています（通常3〜5分）。<br>'
+					+ '<a href="edit.php" target="_blank">投稿一覧</a> を数分後に確認してください。下書きが保存されています。';
+			} else {
+				msgEl.textContent = '❌ サーバーエラーが発生しました。再度お試しください。';
+			}
 		},
 	});
 }
