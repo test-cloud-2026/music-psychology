@@ -232,9 +232,12 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 	$style  = "minimalist one-line art, single continuous flowing black pen line on pure white background, "
 	        . "no color fill inside the outline, no shading, no cross-hatching, no internal detail lines, "
 	        . "only the essential outer contour drawn in one unbroken flowing stroke, "
-	        . "two soft organic blob shapes floating behind the line drawing: one in {$color1} and one in {$color2}, "
-	        . "blobs are flat muted solid shapes with no outline sitting completely behind the black lines, "
-	        . "large white negative space, clean minimal editorial style, ";
+	        . "the main subject is drawn large and prominent, filling most of the horizontal canvas, "
+	        . "one soft organic {$color1} blob shape placed on the left side of the canvas "
+	        . "and one soft organic {$color2} blob shape placed on the right side, "
+	        . "the two blobs are placed independently and spread apart, not touching each other, "
+	        . "each blob is a flat muted solid shape with no outline sitting behind the black lines, "
+	        . "clean minimal editorial style, wide horizontal composition, ";
 	$prompt = $style . trim( $scene );
 
 	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
@@ -248,7 +251,7 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		'body' => wp_json_encode( [
 			'input' => [
 				'prompt'               => $prompt,
-				'aspect_ratio'         => '1:1',
+				'aspect_ratio'         => '16:9', // 292×163.375 ≈ 16:9（横長）
 				'num_outputs'          => 1,
 				'output_format'        => 'png',
 				'num_inference_steps'  => 4,    // schnell の最大値（品質優先）
