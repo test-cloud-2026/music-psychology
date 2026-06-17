@@ -90,7 +90,7 @@ add_action( 'wp_ajax_ototoscreen_search', function() {
 	wp_send_json_success( $movies );
 } );
 
-// AJAX: 記事を生成（Claude + gpt-image-1 + WordPress投稿）
+// AJAX: 記事を生成（Claude + Replicate FLUX.1 [schnell] + WordPress投稿）
 add_action( 'wp_ajax_ototoscreen_generate', function() {
 	@set_time_limit( 300 );
 	check_ajax_referer( 'ototoscreen_nonce', 'nonce' );
@@ -104,7 +104,10 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 	set_transient( $lock_key, true, 360 ); // 6分間ロック（処理上限5分 + 余裕1分）
 
 	$movie = json_decode( stripslashes( $_POST['movie'] ?? '' ), true );
-	if ( ! $movie ) wp_send_json_error( [ 'message' => '映画データが不正です。' ] );
+	if ( ! $movie ) {
+		delete_transient( $lock_key );
+		wp_send_json_error( [ 'message' => '映画データが不正です。' ] );
+	}
 
 	$movie_id    = intval( $movie['id'] ?? 0 );
 	$title       = $movie['title']        ?? 'タイトルなし';
@@ -131,11 +134,11 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 		wp_send_json_error( [ 'message' => 'Claude エラー（シーン）: ' . $scene->get_error_message() ] );
 	}
 
-	// ④ gpt-image-1: 一筆書きイラストを生成
+	// ④ Replicate FLUX.1 [schnell]: 一筆書きイラストを生成
 	$image_bytes = ototoscreen_generate_illustration( trim( $scene ), $colors );
 	if ( is_wp_error( $image_bytes ) ) {
 		delete_transient( $lock_key );
-		wp_send_json_error( [ 'message' => 'OpenAI エラー: ' . $image_bytes->get_error_message() ] );
+		wp_send_json_error( [ 'message' => 'Replicate エラー: ' . $image_bytes->get_error_message() ] );
 	}
 
 	// ⑤ WordPress メディアにイラストをアップロード

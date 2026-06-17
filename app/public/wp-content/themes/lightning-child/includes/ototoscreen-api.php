@@ -1,7 +1,7 @@
 <?php
 /**
  * OtotoScreen — 外部API連携関数
- * TMDb / Claude / gpt-image-1 / WordPress の各処理をまとめた関数群
+ * TMDb / Claude / Replicate FLUX.1 [schnell] / WordPress の各処理をまとめた関数群
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -184,40 +184,74 @@ function ototoscreen_get_youtube_trailer( $movie_id ) {
 }
 
 // =============================================
-// OpenAI API — gpt-image-1 でイラスト生成
+// Replicate API — FLUX.1 [schnell] でイラスト生成
 // =============================================
 
 function ototoscreen_generate_illustration( $scene, $colors ) {
+	if ( ! defined( 'OTOTOSCREEN_REPLICATE_API_TOKEN' ) || ! OTOTOSCREEN_REPLICATE_API_TOKEN ) {
+		return new WP_Error( 'replicate_error', 'OTOTOSCREEN_REPLICATE_API_TOKEN が設定されていません。' );
+	}
+
 	$style  = "one continuous line drawing, single line art style, minimalist black thin line on white background, subtle muted color accent shapes in {$colors}, elegant and clean, no color fill, white background, ";
 	$prompt = $style . trim( $scene );
 
-	$response = wp_remote_post( 'https://api.openai.com/v1/images/generations', [
-		'timeout' => 120,
+	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
+		'timeout' => 70,
 		'headers' => [
-			'Authorization' => 'Bearer ' . OTOTOSCREEN_OPENAI_API_KEY,
+			'Authorization' => 'Bearer ' . OTOTOSCREEN_REPLICATE_API_TOKEN,
 			'Content-Type'  => 'application/json',
+			'Prefer'        => 'wait=60',
+			'Cancel-After'  => '90s',
 		],
 		'body' => wp_json_encode( [
-			'model'   => 'gpt-image-1',
-			'prompt'  => $prompt,
-			'size'    => '1024x1024',
-			'quality' => 'low',
-			'n'       => 1,
+			'input' => [
+				'prompt'        => $prompt,
+				'aspect_ratio'  => '1:1',
+				'num_outputs'   => 1,
+				'output_format' => 'png',
+			],
 		] ),
 	] );
 
 	if ( is_wp_error( $response ) ) return $response;
 
+	$code = wp_remote_retrieve_response_code( $response );
 	$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-	if ( ! empty( $body['error'] ) ) {
-		return new WP_Error( 'openai_error', $body['error']['message'] );
+	if ( ! in_array( $code, [ 200, 201 ], true ) ) {
+		$message = $body['detail'] ?? $body['error'] ?? wp_remote_retrieve_body( $response );
+		return new WP_Error( 'replicate_error', 'Replicate API エラー: ' . wp_strip_all_tags( (string) $message ) );
 	}
 
-	$b64 = $body['data'][0]['b64_json'] ?? null;
-	if ( ! $b64 ) return new WP_Error( 'openai_error', '画像データを取得できませんでした。' );
+	for ( $i = 0; $i < 6; $i++ ) {
+		$status = $body['status'] ?? '';
+		if ( 'succeeded' === $status ) {
+			$output    = $body['output'] ?? null;
+			$image_url = is_array( $output ) ? ( $output[0] ?? '' ) : $output;
+			if ( ! $image_url ) {
+				return new WP_Error( 'replicate_error', 'Replicate の画像URLを取得できませんでした。' );
+			}
 
-	return base64_decode( $b64 );
+			$image_response = wp_remote_get( $image_url, [ 'timeout' => 30 ] );
+			if ( is_wp_error( $image_response ) ) return $image_response;
+			return wp_remote_retrieve_body( $image_response );
+		}
+
+		if ( in_array( $status, [ 'failed', 'canceled' ], true ) ) {
+			return new WP_Error( 'replicate_error', 'Replicate 画像生成失敗: ' . ( $body['error'] ?? 'unknown error' ) );
+		}
+
+		$get_url = $body['urls']['get'] ?? '';
+		if ( ! $get_url ) break;
+		sleep( 5 );
+		$poll_response = wp_remote_get( $get_url, [
+			'timeout' => 15,
+			'headers' => [ 'Authorization' => 'Bearer ' . OTOTOSCREEN_REPLICATE_API_TOKEN ],
+		] );
+		if ( is_wp_error( $poll_response ) ) return $poll_response;
+		$body = json_decode( wp_remote_retrieve_body( $poll_response ), true );
+	}
+
+	return new WP_Error( 'replicate_error', 'Replicate 画像生成が時間内に完了しませんでした。' );
 }
 
 // =============================================
