@@ -244,22 +244,27 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 	        . "clean minimal editorial style, ";
 	$prompt = $style . trim( $scene );
 
-	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
-		'timeout' => 70,
+	// スタイル参照画像（一筆書き線画の手のイラスト）
+	$style_ref = 'http://ototo-design.com/ototoscreen/wp-content/uploads/2026/06/22868277.png';
+
+	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-dev/predictions', [
+		'timeout' => 100,
 		'headers' => [
 			'Authorization' => 'Bearer ' . OTOTOSCREEN_REPLICATE_API_TOKEN,
 			'Content-Type'  => 'application/json',
-			'Prefer'        => 'wait=60',
-			'Cancel-After'  => '90s',
+			'Prefer'        => 'wait=90',
+			'Cancel-After'  => '120s',
 		],
 		'body' => wp_json_encode( [
 			'input' => [
 				'prompt'               => $prompt,
+				'image'                => $style_ref,  // スタイル参照画像（img2img）
+				'prompt_strength'      => 0.85,         // 0=参照画像そのまま / 1=プロンプトのみ
 				'aspect_ratio'         => '1:1',
 				'num_outputs'          => 1,
 				'output_format'        => 'png',
-				'num_inference_steps'  => 4,    // schnell の最大値（品質優先）
-				'go_fast'              => false, // fp8量子化を無効にして品質を上げる
+				'num_inference_steps'  => 28,
+				'guidance'             => 3.5,
 			],
 		] ),
 	] );
