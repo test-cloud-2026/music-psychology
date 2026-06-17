@@ -173,5 +173,73 @@ add_action( 'wp_ajax_ototoscreen_generate', function() {
 } );
 
 /************************************************
+ * 投稿詳細ページ — カテゴリー・タグを本文上部に表示
+ */
+add_filter( 'the_content', function( $content ) {
+	if ( ! is_single() || ! in_the_loop() || ! is_main_query() ) return $content;
+
+	$categories = get_the_category();
+	$tags       = get_the_tags();
+
+	if ( ! $categories && ! $tags ) return $content;
+
+	$html = '<div class="ototoscreen-post-meta">';
+
+	if ( $categories ) {
+		foreach ( $categories as $cat ) {
+			if ( 'uncategorized' === $cat->slug ) continue;
+			$html .= '<a href="' . esc_url( get_category_link( $cat->term_id ) ) . '" class="ototoscreen-category">'
+			       . esc_html( $cat->name ) . '</a>';
+		}
+	}
+
+	if ( $tags ) {
+		foreach ( $tags as $tag ) {
+			$html .= '<a href="' . esc_url( get_tag_link( $tag->term_id ) ) . '" class="ototoscreen-tag">'
+			       . '#' . esc_html( $tag->name ) . '</a>';
+		}
+	}
+
+	$html .= '</div>';
+
+	return $html . $content;
+}, 10 );
+
+/************************************************
+ * 投稿詳細ページ — 既存記事の画像配置を修正
+ * （イラスト左 flex:2 / ポスター右 flex:1 / figcaption 除去）
+ */
+add_filter( 'the_content', function( $content ) {
+	if ( ! is_single() || ! in_the_loop() || ! is_main_query() ) return $content;
+
+	return preg_replace_callback(
+		'/<div style="display:flex; gap:24px; align-items:flex-start;">\s*'
+		. '<figure[^>]*>\s*'
+		. '<img src="([^"]+)" alt="([^"]+) ポスター"[^>]*>\s*'
+		. '(?:<figcaption>[^<]*<\/figcaption>\s*)?'
+		. '<\/figure>\s*'
+		. '<figure[^>]*>\s*'
+		. '<img src="([^"]+)" alt="[^"]+ イラスト"[^>]*>\s*'
+		. '(?:<figcaption>[^<]*<\/figcaption>\s*)?'
+		. '<\/figure>\s*'
+		. '<\/div>/s',
+		function( $m ) {
+			$poster_url = $m[1];
+			$title      = $m[2];
+			$illust_url = $m[3];
+			return '<div style="display:flex; gap:24px; align-items:flex-start;">'
+			     . "\n  <figure style=\"flex:2; margin:0;\">"
+			     . "\n    <img src=\"{$illust_url}\" alt=\"{$title} イラスト\" style=\"width:100%;\">"
+			     . "\n  </figure>"
+			     . "\n  <figure style=\"flex:1; margin:0;\">"
+			     . "\n    <img src=\"{$poster_url}\" alt=\"{$title} ポスター\" style=\"width:100%;\">"
+			     . "\n  </figure>"
+			     . "\n</div>";
+		},
+		$content
+	);
+}, 10 );
+
+/************************************************
  * 独自の処理を必要に応じて書き足します
  */

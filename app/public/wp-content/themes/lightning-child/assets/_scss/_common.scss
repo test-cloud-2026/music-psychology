@@ -89,18 +89,12 @@ time.published {
   }
 }
 
-// 更新日
-.updated:not(.published) {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.78rem;
-  color: $color-meta;
-
-  // 更新日は「更新：」ラベル付きで表示
-  &::before {
-    content: '更新：';
-    font-size: 0.72rem;
-  }
+// 更新日・投稿者は非表示
+.updated:not(.published),
+.byline,
+.vk-author,
+.author.vcard {
+  display: none !important;
 }
 
 // =============================================
@@ -219,6 +213,46 @@ h1, h2, h3, h4, h5, h6 {
       text-align: center;
       margin-top: 0.4rem;
     }
+  }
+}
+
+// =============================================
+// 投稿詳細ページ — カテゴリー・タグ（本文上部）
+// =============================================
+
+.ototoscreen-post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.ototoscreen-category {
+  display: inline-block;
+  background: $color-accent;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 2px;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+
+  &:hover {
+    background: darken($color-accent, 10%);
+    color: #fff;
+  }
+}
+
+.ototoscreen-tag {
+  display: inline-block;
+  color: $color-meta;
+  font-size: 0.78rem;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-accent;
   }
 }
 

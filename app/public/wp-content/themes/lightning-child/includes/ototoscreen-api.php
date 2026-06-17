@@ -346,13 +346,11 @@ function ototoscreen_build_content( $movie, $description, $illustration_url, $gi
 
 	$content = "
 <div style=\"display:flex; gap:24px; align-items:flex-start;\">
-  <figure style=\"flex:1;\">
-    <img src=\"{$poster_url}\" alt=\"{$title} ポスター\" style=\"width:100%;\">
-    <figcaption>公式ポスター</figcaption>
-  </figure>
-  <figure style=\"flex:1;\">
+  <figure style=\"flex:2; margin:0;\">
     <img src=\"" . esc_url( $illustration_url ) . "\" alt=\"{$title} イラスト\" style=\"width:100%;\">
-    <figcaption>OtotoScreen オリジナルイラスト</figcaption>
+  </figure>
+  <figure style=\"flex:1; margin:0;\">
+    <img src=\"{$poster_url}\" alt=\"{$title} ポスター\" style=\"width:100%;\">
   </figure>
 </div>
 
