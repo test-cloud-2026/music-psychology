@@ -220,7 +220,7 @@ function ototoscreen_get_youtube_trailer( $movie_id ) {
 }
 
 // =============================================
-// Replicate API — recraft-v3 でイラスト生成
+// Replicate API — FLUX.1 [schnell] でイラスト生成
 // =============================================
 
 function ototoscreen_generate_illustration( $scene, $colors ) {
@@ -228,30 +228,38 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		return new WP_Error( 'replicate_error', 'OTOTOSCREEN_REPLICATE_API_TOKEN が設定されていません。' );
 	}
 
+	// 2色を個別のブロブとして明示するために分割する
 	$color_parts = explode( ' and ', $colors, 2 );
 	$color1      = trim( $color_parts[0] ?? 'warm terracotta' );
 	$color2      = trim( $color_parts[1] ?? 'soft steel blue' );
 
-	// recraft-v3 の vector_illustration/line_art スタイルが線画の見た目を担当するため、
-	// プロンプトはシーン内容と色の配置のみを指定する
-	$prompt = trim( $scene )
-	        . ", with a soft organic {$color1} watercolor wash blob"
-	        . " and a separate soft organic {$color2} watercolor wash blob placed in the background,"
-	        . " white background, centered composition";
+	$style  = "one stroke line art, the entire image is formed by a single unbroken pen stroke, "
+	        . "the pen never lifts from the paper, one continuous flowing line only, "
+	        . "pure white background, no fill, no shading, no cross-hatching, no multiple lines, "
+	        . "no internal details, just one simple flowing contour line tracing the whole subject, "
+	        . "the main subject is drawn large and centered in the middle of the canvas, "
+	        . "one soft organic {$color1} blob shape and one soft organic {$color2} blob shape "
+	        . "are each placed independently across the canvas, spread apart from each other, "
+	        . "each blob is a flat muted solid shape with no outline sitting behind the line, "
+	        . "clean minimal editorial style, ";
+	$prompt = $style . trim( $scene );
 
-	$response = wp_remote_post( 'https://api.replicate.com/v1/models/recraft-ai/recraft-v3/predictions', [
-		'timeout' => 100,
+	$response = wp_remote_post( 'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', [
+		'timeout' => 70,
 		'headers' => [
 			'Authorization' => 'Bearer ' . OTOTOSCREEN_REPLICATE_API_TOKEN,
 			'Content-Type'  => 'application/json',
 			'Prefer'        => 'wait=60',
-			'Cancel-After'  => '120s',
+			'Cancel-After'  => '90s',
 		],
 		'body' => wp_json_encode( [
 			'input' => [
-				'prompt' => $prompt,
-				'style'  => 'digital_illustration/hand_drawn_outline',
-				'size'   => '1024x1024',
+				'prompt'              => $prompt,
+				'aspect_ratio'        => '1:1',
+				'num_outputs'         => 1,
+				'output_format'       => 'png',
+				'num_inference_steps' => 4,
+				'go_fast'             => false,
 			],
 		] ),
 	] );
