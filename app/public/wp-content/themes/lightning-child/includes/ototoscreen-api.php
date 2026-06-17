@@ -254,7 +254,7 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 		'body' => wp_json_encode( [
 			'input' => [
 				'prompt'               => $prompt,
-				'aspect_ratio'         => '16:9', // 292×163.375 ≈ 16:9（横長）
+				'aspect_ratio'         => '1:1',
 				'num_outputs'          => 1,
 				'output_format'        => 'png',
 				'num_inference_steps'  => 4,    // schnell の最大値（品質優先）
