@@ -247,12 +247,18 @@ h1, h2, h3, h4, h5, h6 {
 
 .ototoscreen-tag {
   display: inline-block;
-  color: $color-meta;
-  font-size: 0.78rem;
+  border: 1px solid $color-accent;
+  color: $color-accent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 2px;
   text-decoration: none;
+  letter-spacing: 0.05em;
 
   &:hover {
-    color: $color-accent;
+    background: $color-accent;
+    color: #fff;
   }
 }
 
