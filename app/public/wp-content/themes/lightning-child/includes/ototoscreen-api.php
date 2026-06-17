@@ -384,17 +384,23 @@ function ototoscreen_create_draft( $title, $content, $media_id = null ) {
 	// iframeを含む自動生成コンテンツを保存するため、管理者権限下でKSESフィルターを一時解除する。
 	// この関数は manage_options チェック済みのAJAXハンドラからのみ呼ばれる。
 	kses_remove_filters();
-	$post_id = wp_insert_post( [
+
+	$post_args = [
 		'post_title'   => sanitize_text_field( $title ),
 		'post_content' => $content,
 		'post_status'  => 'draft',
 		'post_type'    => 'post',
-	] );
+	];
+
+	// アイキャッチをpost作成と同時にmeta_inputで設定（set_post_thumbnailより確実）
+	if ( $media_id ) {
+		$post_args['meta_input'] = [ '_thumbnail_id' => intval( $media_id ) ];
+	}
+
+	$post_id = wp_insert_post( $post_args );
 	kses_add_filters();
 
 	if ( is_wp_error( $post_id ) ) return $post_id;
-
-	if ( $media_id ) set_post_thumbnail( $post_id, $media_id );
 
 	return $post_id;
 }
