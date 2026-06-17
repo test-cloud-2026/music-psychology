@@ -45,7 +45,8 @@ function ototoscreen_extract_colors( $poster_url ) {
 	imagecopyresampled( $thumb, $image, 0, 0, 0, 0, 50, 75, imagesx( $image ), imagesy( $image ) );
 	imagedestroy( $image );
 
-	$vivid_buckets  = []; // 彩度のある色（dominant・accent候補）
+	$vivid_freq    = []; // 色名 → 出現頻度（dominant選択用）
+	$vivid_max_sat = []; // 色名 → 最大彩度（accent選択用）
 	$neutral_buckets = []; // 中間トーンのグレー（vivid が少ない時の補完用）
 
 	for ( $x = 0; $x < 50; $x++ ) {
@@ -65,7 +66,8 @@ function ototoscreen_extract_colors( $poster_url ) {
 			$name = ototoscreen_describe_color( $r, $g, $b );
 
 			if ( $sat > 0.18 && $name !== 'muted slate gray' ) {
-				$vivid_buckets[ $name ] = ( $vivid_buckets[ $name ] ?? 0 ) + 1;
+				$vivid_freq[ $name ]    = ( $vivid_freq[ $name ] ?? 0 ) + 1;
+				$vivid_max_sat[ $name ] = max( $vivid_max_sat[ $name ] ?? 0, $sat );
 			} else {
 				$neutral_buckets[ $name ] = ( $neutral_buckets[ $name ] ?? 0 ) + 1;
 			}
@@ -73,18 +75,20 @@ function ototoscreen_extract_colors( $poster_url ) {
 	}
 	imagedestroy( $thumb );
 
-	arsort( $vivid_buckets );
+	arsort( $vivid_freq );
+	arsort( $vivid_max_sat );
 	arsort( $neutral_buckets );
 
-	$vivid_keys   = array_keys( $vivid_buckets );
-	$neutral_keys = array_keys( $neutral_buckets );
+	$vivid_by_freq = array_keys( $vivid_freq );
+	$vivid_by_sat  = array_keys( $vivid_max_sat );
+	$neutral_keys  = array_keys( $neutral_buckets );
 
-	// 支配色：最も頻度の高い鮮やかな色
-	$dominant = $vivid_keys[0] ?? $neutral_keys[0] ?? 'warm terracotta';
+	// 支配色（color1）：ポスターで最も面積を占める鮮やかな色
+	$dominant = $vivid_by_freq[0] ?? $neutral_keys[0] ?? 'warm terracotta';
 
-	// アクセント色：支配色と異なる2番目の鮮やかな色
+	// アクセント色（color2）：最も彩度が高い色（支配色と異なるもの）
 	$accent = null;
-	foreach ( $vivid_keys as $k ) {
+	foreach ( $vivid_by_sat as $k ) {
 		if ( $k !== $dominant ) { $accent = $k; break; }
 	}
 	if ( ! $accent ) {
