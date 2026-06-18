@@ -234,14 +234,14 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 	$color1      = trim( $color_parts[0] ?? 'warm terracotta' );
 	$color2      = trim( $color_parts[1] ?? 'soft steel blue' );
 
-	$style  = "one stroke line art, the entire image is formed by a single unbroken pen stroke, "
-	        . "the pen never lifts from the paper, one continuous flowing line only, "
-	        . "pure white background, no fill, no shading, no cross-hatching, no multiple lines, "
-	        . "no internal details, just one simple flowing contour line tracing the whole subject, "
-	        . "the main subject is drawn large and centered in the middle of the canvas, "
-	        . "one soft organic {$color1} blob shape and one soft organic {$color2} blob shape "
-	        . "are each placed independently across the canvas, spread apart from each other, "
-	        . "each blob is a flat muted solid shape with no outline sitting behind the line, "
+	$style  = "minimalist line art illustration, pure white background, "
+	        . "one large flat {$color1} watercolor wash shape and one large flat {$color2} watercolor wash shape "
+	        . "floating on the white background, both color shapes clearly visible and spread apart, "
+	        . "a single thin black continuous contour line drawing the subject centered on the canvas, "
+	        . "ultra-simple silhouette outline, very few lines total, no interior lines, "
+	        . "no shadows, no shading, no wrinkles, no fabric creases, no skin folds, "
+	        . "no brick texture, no wall texture, no stone texture, no surface details, no patterns, "
+	        . "no cross-hatching, no hatching, no stippling, no fill, "
 	        . "clean minimal editorial style, ";
 	$prompt = $style . trim( $scene );
 
