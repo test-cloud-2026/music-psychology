@@ -234,11 +234,13 @@ function ototoscreen_generate_illustration( $scene, $colors ) {
 	$color1      = trim( $color_parts[0] ?? 'warm terracotta' );
 	$color2      = trim( $color_parts[1] ?? 'soft steel blue' );
 
-	$style  = "minimalist line art illustration, pure white background, "
+	$style  = "minimalist continuous line art illustration, pure white background, "
 	        . "one large flat {$color1} watercolor wash shape and one large flat {$color2} watercolor wash shape "
 	        . "floating on the white background, both color shapes clearly visible and spread apart, "
-	        . "a single thin black continuous contour line drawing the subject centered on the canvas, "
-	        . "ultra-simple silhouette outline, very few lines total, no interior lines, "
+	        . "the subject is drawn very large and fills the entire canvas edge to edge, "
+	        . "one single unbroken smooth flowing black contour line traces the whole subject without lifting, "
+	        . "the line is fluid and graceful, no gaps, no breaks, no corners, curves only, "
+	        . "ultra-simple silhouette, very few lines total, no interior lines, "
 	        . "no shadows, no shading, no wrinkles, no fabric creases, no skin folds, "
 	        . "no brick texture, no wall texture, no stone texture, no surface details, no patterns, "
 	        . "no cross-hatching, no hatching, no stippling, no fill, "
